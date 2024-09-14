@@ -1,0 +1,23 @@
+{
+  "name": "space-pixels-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./api/server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "nodemon ",
+    "docker:compose-built": "docker-compose up --build",
+    "docker:compose-run": "docker-compose up",
+    "docker:build-img": "docker build -t my-server .",
+    "docker:restart": "docker system prune && docker build -t my-server . && docker-compose up --build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.0",
+    "nodemon": "^3.1.4",
+    "pg": "^8.12.0"
+  },
+  "type": "module"
+}
