@@ -1,5 +1,4 @@
 import express from "express";
-import client from "./config/db.js";
 import userRoutes from "./api/routes/user.routes.js";
 import pixelRoutes from "./api/routes/pixel.routes.js";
 import scoreRoutes from "./api/routes/score.routes.js";
