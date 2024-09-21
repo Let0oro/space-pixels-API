@@ -1,9 +1,23 @@
 import client from "../../config/db.js";
+import genQuerys from "./querys.js";
 
-const userQuerys = {
-  getAll: "SELECT * FROM users",
-  get: "SELECT * FROM users WHERE id = $1",
-};
+const userQuerys = (() => {
+  const {
+    get,
+    getAll,
+    postUser: post,
+    updateUser: update,
+    delete: delet,
+  } = genQuerys("users");
+
+  return {
+    getAll,
+    get,
+    post,
+    update,
+    delete: delet,
+  };
+})();
 
 const getAllUsers = async (req, res, next) => {
   try {
@@ -29,7 +43,49 @@ const getUser = async (req, res) => {
   }
 };
 
+const newUser = async (req, res) => {
+  const {
+    body: { name, email, password },
+  } = req;
+  try {
+    await client.query(userQuerys.post, [name, email, password]);
+    return res
+      .status(201)
+      .json({ message: `User ${name} added to users table` });
+  } catch (error) {
+    return res.status(400).json({ message: error });
+  }
+};
+
+const updateUser = async (req, res) => {
+  const {
+    body: { password },
+    params: { id },
+  } = req;
+  try {
+    await client.query(userQuerys.update, [password, id]);
+    return res.status(201).json({ message: `User ${id} updated` });
+  } catch (error) {
+    return res.status(400).json({ message: error });
+  }
+};
+
+const deleteUser = async (req, res) => {
+  const {
+    params: { id },
+  } = req;
+  try {
+    await client.query(userQuerys, [id]);
+    return res.status(200).json({ message: `User ${id} has been deleted` });
+  } catch (error) {
+    return res.status(400).json({ message: error });
+  }
+};
+
 export default {
   getAllUsers,
-  getUser
+  getUser,
+  newUser,
+  updateUser,
+  deleteUser,
 };
