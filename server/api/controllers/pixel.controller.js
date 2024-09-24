@@ -1,27 +1,11 @@
-import client from "../../config/db.js";
+import pool from "../../config/db.js";
 import genQuerys from "./querys.js";
 
-const pixelQuerys = (() => {
-  const {
-    get,
-    getAll,
-    postPixel: post,
-    updatePixel: update,
-    delete: delet,
-  } = genQuerys("pixel");
-
-  return {
-    getAll,
-    get,
-    post,
-    update,
-    delete: delet,
-  };
-})();
+const pixelQuerys = genQuerys("pixel");
 
 const getAllPixels = async (req, res, next) => {
   try {
-    const pixels = await client.query(pixelQuerys.getAll);
+    const pixels = await pool.query(pixelQuerys.getAll);
     if (!pixels)
       return res
         .status(404)
@@ -35,7 +19,7 @@ const getAllPixels = async (req, res, next) => {
 const getPixel = async (req, res) => {
   const { id } = req.params;
   try {
-    const pixel = await client.query(pixelQuerys.get, [id]);
+    const pixel = await pool.query(pixelQuerys.get, [id]);
     if (!pixel) return res.status(404).json({ message: "Pixel not found" });
     return res.status(200).json(pixel.rows);
   } catch (error) {
@@ -48,7 +32,7 @@ const newPixel = async (req, res) => {
     body: { name, email, password },
   } = req;
   try {
-    await client.query(pixelQuerys.post, [name, email, password]);
+    await pool.query(pixelQuerys.post, [name, email, password]);
     return res
       .status(201)
       .json({ message: `Pixel ${name} added to pixel table` });
@@ -63,7 +47,7 @@ const updatePixel = async (req, res) => {
     params: { id },
   } = req;
   try {
-    await client.query(pixelQuerys.update, [password, id]);
+    await pool.query(pixelQuerys.update, [password, id]);
     return res.status(201).json({ message: `Pixel ${id} updated` });
   } catch (error) {
     return res.status(400).json({ message: error });
@@ -75,7 +59,7 @@ const deletePixel = async (req, res) => {
     params: { id },
   } = req;
   try {
-    await client.query(pixelQuerys, [id]);
+    await pool.query(pixelQuerys, [id]);
     return res.status(200).json({ message: `Pixel ${id} has been deleted` });
   } catch (error) {
     return res.status(400).json({ message: error });

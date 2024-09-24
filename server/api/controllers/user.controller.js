@@ -1,27 +1,33 @@
-import client from "../../config/db.js";
+import pool from "../../config/db.js";
+import { comparePassword } from "../../middleware/user.middleware.js";
+import { setCookieUser } from "../../utils/cookies.js";
 import genQuerys from "./querys.js";
 
-const userQuerys = (() => {
-  const {
-    get,
-    getAll,
-    postUser: post,
-    updateUser: update,
-    delete: delet,
-  } = genQuerys("users");
+const userQuerys = genQuerys("users");
 
-  return {
-    getAll,
-    get,
-    post,
-    update,
-    delete: delet,
-  };
-})();
+const getExistedUserQuery = `SELECT * FROM users WHERE name = $1 OR email = $2`;
+
+// const getToken = async (req, res) => {
+//   const validation = getCookieUserToken(req);
+//   if (!validation) return res.status(400).json({message: "User cant login with token"});
+//   return res.status(200).json({message: "welcome!"})
+// }
+
+const getSessionUser = async (req, res) => {
+  if (req.session && req.session.user && req.session.id) {
+    const {user: name, id} = req.session;
+    const user = await pool.query("SELECT * FROM users WHERE id=$1 AND name=$2", [id, name]);
+    return res
+    .status(200)
+    .json(user);
+  } else {
+    return res.status(404).json({message: "session expired"});
+  }
+  }
 
 const getAllUsers = async (req, res, next) => {
   try {
-    const users = await client.query(userQuerys.getAll);
+    const users = await pool.query(userQuerys.getAll);
     if (!users)
       return res
         .status(404)
@@ -35,8 +41,9 @@ const getAllUsers = async (req, res, next) => {
 const getUser = async (req, res) => {
   const { id } = req.params;
   try {
-    const user = await client.query(userQuerys.get, [id]);
-    if (!user) return res.status(404).json({ message: "User not found" });
+    const user = await pool.query(userQuerys.get, [id]);
+    if (!user.rowCount)
+      return res.status(404).json({ message: "User not found" });
     return res.status(200).json(user.rows);
   } catch (error) {
     return res.status(400).json({ message: error });
@@ -48,10 +55,50 @@ const newUser = async (req, res) => {
     body: { name, email, password },
   } = req;
   try {
-    await client.query(userQuerys.post, [name, email, password]);
+    const existedUser = await pool.query(getExistedUserQuery, [name, email]);
+    if (existedUser.rowCount)
+      return res.status(400).json({
+        message: "User already exists with this name or email, try with other",
+      });
+    await pool.query(userQuerys.post, [name, email, password]);
     return res
       .status(201)
       .json({ message: `User ${name} added to users table` });
+  } catch (error) {
+    console.error(error);
+    return res.status(400).json({ message: error.message });
+  }
+};
+
+const loginUser = async (req, res) => {
+  try {
+    const {
+      body: { nameoremail, password },
+    } = req;
+    const existedUser = await pool.query(getExistedUserQuery, [
+      nameoremail,
+      nameoremail,
+    ]);
+    if (!existedUser.rowCount)
+      return res.status(400).json({ message: "This user doesn't exists" });
+
+    const isValidPassword = comparePassword(password);
+    if (!isValidPassword) return res.status(400).json({message: "Incorrect password"});
+    // Session auth
+    // if (existedUser.rows[0].admin) req.session.admin = true;
+    setCookieUser(res);
+
+    return res.status(200).json({ message: "loginUser" });
+  } catch (error) {
+    return res.status(400).json({ message: error });
+  }
+};
+
+const logoutUser = async (req, res) => {
+  try {
+    // Session auth
+    // req.session.destroy();
+    return res.status(200).json({ message: "logoutUser" });
   } catch (error) {
     return res.status(400).json({ message: error });
   }
@@ -63,7 +110,7 @@ const updateUser = async (req, res) => {
     params: { id },
   } = req;
   try {
-    await client.query(userQuerys.update, [password, id]);
+    await pool.query(userQuerys.update, [password, id]);
     return res.status(201).json({ message: `User ${id} updated` });
   } catch (error) {
     return res.status(400).json({ message: error });
@@ -75,7 +122,7 @@ const deleteUser = async (req, res) => {
     params: { id },
   } = req;
   try {
-    await client.query(userQuerys, [id]);
+    await pool.query(userQuerys.delete, [id]);
     return res.status(200).json({ message: `User ${id} has been deleted` });
   } catch (error) {
     return res.status(400).json({ message: error });
@@ -85,7 +132,10 @@ const deleteUser = async (req, res) => {
 export default {
   getAllUsers,
   getUser,
+  getToken,
   newUser,
+  loginUser,
+  logoutUser,
   updateUser,
   deleteUser,
 };

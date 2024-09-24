@@ -1,9 +1,9 @@
 import pg from "pg";
 import { queryTables, querySeedUser } from "../seed/query.seed.js";
 
-const { Client } = pg;
+const { Pool } = pg;
 
-const client = new Client({
+const pool = new Pool({
   user: "user",
   host: "db",
   database: "db123",
@@ -11,10 +11,8 @@ const client = new Client({
   port: 5432,
 });
 
-client.connect();
-
 const checkDBConnection = async () => {
-  const { rows, rowCount, fields } = await client.query(
+  const { rows, rowCount, fields } = await pool.query(
     "SELECT TRUE AS connected_to_database"
   );
   console.log(rows);
@@ -22,14 +20,14 @@ const checkDBConnection = async () => {
 checkDBConnection();
 
 const createTablesAndUser = async () => {
-  await client.query(queryTables.user);
-  await client.query(queryTables.pixel);
-  await client.query(queryTables.score);
+  await pool.query(queryTables.user);
+  await pool.query(queryTables.pixel);
+  await pool.query(queryTables.score);
 
-  const users = await client.query("SELECT * FROM users");
-  if (!users.rowCount) await client.query(querySeedUser);
+  const users = await pool.query("SELECT * FROM users");
+  if (!users.rowCount) await pool.query(querySeedUser);
 };
 
 createTablesAndUser();
 
-export default client;
+export default pool;
