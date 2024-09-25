@@ -1,14 +1,14 @@
 const queryTables = {
   user: `CREATE TABLE IF NOT EXISTS users 
-  (id SERIAL PRIMARY KEY REFERENCES pixel(userid), 
-  name VARCHAR (255) UNIQUE NOT NULL REFERENCES score(username), 
-  email VARCHAR (255) UNIQUE NOT NULL, 
-  password VARCHAR (30) NOT NULL);`,
+  (id SERIAL PRIMARY KEY, 
+  name CHARACTER VARYING(60) UNIQUE NOT NULL, 
+  email CHARACTER VARYING(60) UNIQUE NOT NULL, 
+  password TEXT NOT NULL);`,
   pixel: `CREATE TABLE IF NOT EXISTS pixel 
-  (userid SERIAL PRIMARY KEY, 
+  (userid INT REFERENCES users(id), 
   secuence TEXT NOT NULL);`,
   score: `CREATE TABLE IF NOT EXISTS score 
-  (username SERIAL PRIMARY KEY, 
+  (username  CHARACTER VARYING(60) REFERENCES users(name), 
   score INT NOT NULL);`,
 };
 

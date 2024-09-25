@@ -5,8 +5,9 @@ import scoreRoutes from "./api/routes/score.routes.js";
 import { config } from "dotenv";
 import cookieParser from "cookie-parser";
 import session from "express-session";
-import { uid } from 'uid-safe';
+import { v4 as uid } from 'uuid';
 import pgSession from 'connect-pg-simple';
+import pool from "./config/db.js";
 
 const PgSession = pgSession(session);
 

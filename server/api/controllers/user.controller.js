@@ -1,17 +1,10 @@
 import pool from "../../config/db.js";
-import { comparePassword } from "../../middleware/user.middleware.js";
-import { setCookieUser } from "../../utils/cookies.js";
+import { comparePassword, setCookieUser } from "../../middleware/user.middleware.js";
 import genQuerys from "./querys.js";
 
 const userQuerys = genQuerys("users");
 
 const getExistedUserQuery = `SELECT * FROM users WHERE name = $1 OR email = $2`;
-
-// const getToken = async (req, res) => {
-//   const validation = getCookieUserToken(req);
-//   if (!validation) return res.status(400).json({message: "User cant login with token"});
-//   return res.status(200).json({message: "welcome!"})
-// }
 
 const getSessionUser = async (req, res) => {
   if (req.session && req.session.user && req.session.id) {
@@ -58,15 +51,15 @@ const newUser = async (req, res) => {
     const existedUser = await pool.query(getExistedUserQuery, [name, email]);
     if (existedUser.rowCount)
       return res.status(400).json({
-        message: "User already exists with this name or email, try with other",
-      });
-    await pool.query(userQuerys.post, [name, email, password]);
+    message: "User already exists with this name or email, try with other",
+  });
+  await pool.query(userQuerys.post, [name, email, password]);
     return res
       .status(201)
       .json({ message: `User ${name} added to users table` });
   } catch (error) {
     console.error(error);
-    return res.status(400).json({ message: error.message });
+    return res.status(400).json({ message: error });
   }
 };
 
@@ -130,9 +123,9 @@ const deleteUser = async (req, res) => {
 };
 
 export default {
+  getSessionUser,
   getAllUsers,
   getUser,
-  getToken,
   newUser,
   loginUser,
   logoutUser,
