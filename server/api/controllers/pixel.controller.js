@@ -29,15 +29,18 @@ const getPixel = async (req, res) => {
 
 const newPixel = async (req, res) => {
   const {
-    body: { name, email, password },
+    body: { secuence, user },
   } = req;
   try {
-    await pool.query(pixelQuerys.post, [name, email, password]);
+    console.log({body: req.body})
+    const arrFormated = secuence.map(v => `'${v}'`).join(", ");
+    await pool.query(pixelQuerys.post, [user.id, arrFormated]);
     return res
       .status(201)
-      .json({ message: `Pixel ${name} added to pixel table` });
+      .json({ message: `Pixel added to pixel table` });
   } catch (error) {
-    return res.status(400).json({ message: error });
+    console.error({error})
+    return res.status(400).json({ message: 'Error creating a new pixel' });
   }
 };
 

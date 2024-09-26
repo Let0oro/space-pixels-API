@@ -6,7 +6,7 @@ const queryTables = {
   password TEXT NOT NULL);`,
   pixel: `CREATE TABLE IF NOT EXISTS pixel 
   (userid INT REFERENCES users(id), 
-  secuence TEXT NOT NULL);`,
+  secuence TEXT[] NOT NULL);`,
   score: `CREATE TABLE IF NOT EXISTS score 
   (username  CHARACTER VARYING(60) REFERENCES users(name), 
   score INT NOT NULL);`,

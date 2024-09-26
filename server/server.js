@@ -33,6 +33,7 @@ server.use(
     secret: process.env.SECRET_SESSION,
     resave: false,
     saveUninitialized: false,
+
     // unset: "destroy",
     genid: function () {
       return uid();
@@ -45,6 +46,7 @@ server.use(
     store: new PgSession({
       pool,
       tableName: "users_session",
+      createTableIfMissing: true,
     }),
   })
 );
