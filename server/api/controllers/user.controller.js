@@ -1,6 +1,6 @@
 import pool from "../../config/db.js";
-import { comparePassword, setCookieUser } from "../../middleware/user.middleware.js";
 import genQuerys from "./querys.js";
+import bcrypt from "bcrypt";
 
 const userQuerys = genQuerys("users");
 
@@ -68,22 +68,23 @@ const loginUser = async (req, res) => {
     const {
       body: { nameoremail, password },
     } = req;
-    const existedUser = await pool.query(getExistedUserQuery, [
+
+    const {rowCount: existedUser, rows: [{password: userPassword}]} = await pool.query(getExistedUserQuery, [
       nameoremail,
       nameoremail,
     ]);
-    if (!existedUser.rowCount)
+
+    if (!existedUser)
       return res.status(400).json({ message: "This user doesn't exists" });
 
-    const isValidPassword = comparePassword(password);
+    const isValidPassword =  await bcrypt.compare(password, userPassword);
     if (!isValidPassword) return res.status(400).json({message: "Incorrect password"});
     // Session auth
     // if (existedUser.rows[0].admin) req.session.admin = true;
-    setCookieUser(res);
 
     return res.status(200).json({ message: "loginUser" });
   } catch (error) {
-    return res.status(400).json({ message: error });
+    return res.status(400).json({ message: "Error during login process" , error });
   }
 };
 

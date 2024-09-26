@@ -21,7 +21,7 @@ userRoutes.get("/order", async function (req, res) {
 userRoutes.post("/", [setCookieUser, hashUserPassword], userController.newUser);
 userRoutes.post(
   "/login",
-  [getCookieUser, setCookieUser],
+  [getCookieUser, setCookieUser], // En duda sobre si quitar setCookieUser, probar en navegador
   userController.loginUser
 );
 userRoutes.post("/logout", userController.logoutUser);

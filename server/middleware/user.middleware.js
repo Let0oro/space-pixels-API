@@ -31,13 +31,9 @@ const hashUserPassword = async (req, res, next) => {
   }
 };
 
-const comparePassword = async (password) => {
-  const { userPassword } = await getPasswordFromReq();
-  return await bcrypt.compare(password, userPassword);
-};
-
-const getCookieUser = async (req, res) => {
-  if (req.body.email) return next();
+const getCookieUser = async (req, res, next) => {
+  console.log({})
+  if (req.body.password || req.body.name || req.body.email || req.body.nameoremail) return next();
 
   if (!req.session.userId) {
     return res.status(401).json({ message: "No has iniciado sesión" });
@@ -52,27 +48,26 @@ const getCookieUser = async (req, res) => {
     ]);
 
     if (!rowCount) {
-      return res.status(404).json({ message: "Usuario no encontrado" });
+      return res.status(404).json({ message: "User not found" });
     }
 
     req.body = user;
     next();
   } catch (error) {
-    return res.status(500).json({ message: "Error en el servidor", error });
+    return res.status(500).json({ message:  error });
   }
 };
 
 async function setCookieUser(req, res, next) {
-  const { name } = req.body;
+  const { name } = req?.body || {name: null};
   try {
     const {
       rows: [userObjID],
       rowCount: exists,
-    } = await pool.query("SELECT id FROM users WHERE name=$1", [name]);
+    } = name ? await pool.query("SELECT id FROM users WHERE name=$1", [name]) : {rowCount: 0, rows: [{id: null}]};
     const {
       rows: [{id: lastID}],
     } = await pool.query("SELECT id FROM users ORDER BY id DESC");
-    console.log({ userObjID, lastID });
     req.session.userId = exists ? userObjID.id : lastID + 1;
     req.session.username = name;
     next();
@@ -81,4 +76,4 @@ async function setCookieUser(req, res, next) {
   }
 }
 
-export { hashUserPassword, comparePassword, getCookieUser, setCookieUser };
+export { hashUserPassword, getCookieUser, setCookieUser };
