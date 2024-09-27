@@ -23,8 +23,8 @@ checkDBConnection();
 
 const createTablesAndUser = async () => {
   await pool.query("DROP TABLE IF EXISTS pixel CASCADE")
-  await pool.query("DROP TABLE IF EXISTS users CASCADE")
   await pool.query("DROP TABLE IF EXISTS users_session CASCADE")
+  await pool.query("DROP TABLE IF EXISTS users CASCADE")
   await pool.query(queryTables.user);
   await pool.query(queryTables.pixel);
   await pool.query(queryTables.score);
@@ -35,24 +35,24 @@ const createTablesAndUser = async () => {
 
 createTablesAndUser();
 
-const createSessionTable = async () => {
-    const createTableQuery = `
-      CREATE TABLE IF NOT EXISTS users_session (
-        sid varchar NOT NULL COLLATE "default",
-        sess json NOT NULL,
-        expire timestamp(6) NOT NULL,
-        PRIMARY KEY (sid)
-      );
-    `;
+// const createSessionTable = async () => {
+//     const createTableQuery = `
+//       CREATE TABLE IF NOT EXISTS users_session (
+//         sid varchar NOT NULL COLLATE "default",
+//         sess json NOT NULL,
+//         expire timestamp(6) NOT NULL,
+//         PRIMARY KEY (sid)
+//       );
+//     `;
   
-    try {
-      await pool.query(createTableQuery);
-      console.log('Sessions table created or already exists.');
-    } catch (error) {
-      console.error('Errorcreating session table: ' + error);
-    }
-  };
+//     try {
+//       await pool.query(createTableQuery);
+//       console.log('Sessions table created or already exists.');
+//     } catch (error) {
+//       console.error('Errorcreating session table: ' + error);
+//     }
+//   };
   
-  createSessionTable();
+//   createSessionTable();
 
 export default pool;

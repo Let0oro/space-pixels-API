@@ -29,7 +29,7 @@ const getPixel = async (req, res) => {
 
 const newPixel = async (req, res) => {
   const {
-    body: { secuence, user },
+    body: { "0": secuence, user },
   } = req;
   try {
     console.log({body: req.body})

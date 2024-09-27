@@ -7,9 +7,14 @@ const userQuerys = genQuerys("users");
 const getExistedUserQuery = `SELECT * FROM users WHERE name = $1 OR email = $2`;
 
 const getSessionUser = async (req, res) => {
-  if (req.session && req.session.user && req.session.id) {
-    const {user: name, id} = req.session;
-    const user = await pool.query("SELECT * FROM users WHERE id=$1 AND name=$2", [id, name]);
+  console.log({session: req.session})
+  console.log({baseURL: req.route})
+  console.log("Req session boolean: ", !!req.session)
+  console.log("Req session UserID boolean: ", !!req.session.userId)
+  console.log("Req session UserName  boolean: ", !!req.session.username)
+  if (req.session && (req.session.userId || req.session.username)) {
+    const {username: name, userId: id} = req.session;
+    const {rows: [user]} = await pool.query("SELECT * FROM users WHERE id=$1 OR name=$2", [id, name]);
     return res
     .status(200)
     .json(user);

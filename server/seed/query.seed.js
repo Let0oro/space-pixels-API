@@ -5,7 +5,8 @@ const queryTables = {
   email CHARACTER VARYING(60) UNIQUE NOT NULL, 
   password TEXT NOT NULL);`,
   pixel: `CREATE TABLE IF NOT EXISTS pixel 
-  (userid INT REFERENCES users(id), 
+  (id SERIAL PRIMARY KEY
+  userid INT REFERENCES users(id), 
   secuence TEXT[] NOT NULL);`,
   score: `CREATE TABLE IF NOT EXISTS score 
   (username  CHARACTER VARYING(60) REFERENCES users(name), 

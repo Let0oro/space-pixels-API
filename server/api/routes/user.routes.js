@@ -25,8 +25,8 @@ userRoutes.post(
   userController.loginUser
 );
 userRoutes.post("/logout", userController.logoutUser);
-userRoutes.get("/", userController.getAllUsers);
-userRoutes.get("/:id", userController.getUser);
+userRoutes.get("/all/", userController.getAllUsers);
+userRoutes.get("/one/:id", userController.getUser);
 userRoutes.get("/session", userController.getSessionUser);
 userRoutes.put("/:id", hashUserPassword, userController.updateUser);
 userRoutes.delete("/:id", auth, userController.deleteUser);

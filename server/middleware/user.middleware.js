@@ -70,6 +70,7 @@ const getCookieUser = async (req, res, next) => {
 
 async function setCookieUser(req, res, next) {
   const { name, nameoremail } = req?.body || { name: null, nameoremail: null };
+  const {path} = req;
   try {
     const {
       rows: [userObjID],
@@ -82,12 +83,15 @@ async function setCookieUser(req, res, next) {
       : { rowCount: 0, rows: [{ id: null }] };
 
       console.log({userObjID, exists})
+      console.log({path})
+
+    if (!exists && path == "/login") return res.status(404).json("User not exists")
 
     const {
       rows: [{ id: lastID }],
     } = await pool.query("SELECT id FROM users ORDER BY id DESC");
     req.session.userId = exists ? userObjID.id : lastID + 1;
-    req.session.username = name;
+    req.session.username = name || req.session.username;
     next();
   } catch (error) {
     return res

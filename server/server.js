@@ -41,7 +41,7 @@ server.use(
     cookie: {
       httpOnly: true,
       maxAge: EXPIRE_TIME,
-      sameSite: "strict",
+      sameSite: "lax",
     },
     store: new PgSession({
       pool,
