@@ -5,12 +5,12 @@ const scoreQuerys = genQuerys("score");
 
 const getAllScores = async (req, res, next) => {
   try {
-    const scores = await pool.query(scoreQuerys.getAll);
-    if (!scores)
+    const {rows: score} = await pool.query(scoreQuerys.getAll);
+    if (!score)
       return res
         .status(404)
         .json({ message: "Not founded data at table score" });
-    return res.status(200).json(scores.rows);
+    return res.status(200).json(score);
   } catch (error) {
     return res.status(400).json({ message: error });
   }
@@ -28,14 +28,15 @@ const getScore = async (req, res) => {
 };
 
 const newScore = async (req, res) => {
+  console.log({username: req.body.user.name, points: req.body.points})
   const {
-    body: { score },
+    body: { points, user: {name} },
   } = req;
   try {
-    await pool.query(scoreQuerys.post, [score]);
+    await pool.query(scoreQuerys.post, [name, points]);
     return res
       .status(201)
-      .json({ message: `Score added to score table` });
+      .json({ message: `points added to score table` });
   } catch (error) {
     return res.status(400).json({ message: error });
   }

@@ -22,9 +22,10 @@ checkDBConnection();
 
 
 const createTablesAndUser = async () => {
-  await pool.query("DROP TABLE IF EXISTS pixel CASCADE")
-  await pool.query("DROP TABLE IF EXISTS users_session CASCADE")
   await pool.query("DROP TABLE IF EXISTS users CASCADE")
+  await pool.query("DROP TABLE IF EXISTS users_session CASCADE")
+  await pool.query("DROP TABLE IF EXISTS score CASCADE")
+  await pool.query("DROP TABLE IF EXISTS pixel CASCADE")
   await pool.query(queryTables.user);
   await pool.query(queryTables.pixel);
   await pool.query(queryTables.score);

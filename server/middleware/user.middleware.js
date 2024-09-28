@@ -36,7 +36,7 @@ const hashUserPassword = async (req, res, next) => {
 };
 
 const getCookieUser = async (req, res, next) => {
-  console.log({ body: req.body, sessionUserId: req.session.userId });
+  // console.log({ body: req.body, session: req.session });
   if (
     req.body.password ||
     req.body.name ||
@@ -61,6 +61,8 @@ const getCookieUser = async (req, res, next) => {
       return res.status(404).json({ message: "User not found" });
     }
 
+    // console.log({body: req.body, user})
+
     req.body = { ...req.body, user };
     next();
   } catch (error) {
@@ -82,8 +84,8 @@ async function setCookieUser(req, res, next) {
         )
       : { rowCount: 0, rows: [{ id: null }] };
 
-      console.log({userObjID, exists})
-      console.log({path})
+      // console.log({userObjID, exists})
+      // console.log({name, nameoremail})
 
     if (!exists && path == "/login") return res.status(404).json("User not exists")
 
