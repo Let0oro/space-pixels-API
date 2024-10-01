@@ -32,7 +32,6 @@ const newPixel = async (req, res) => {
     body: { "0": secuence, user },
   } = req;
   try {
-    console.log({body: req.body})
     const arrFormated = secuence.map(v => `'${v}'`).join(", ");
     await pool.query(pixelQuerys.post, [user.id, arrFormated]);
     return res
@@ -46,11 +45,11 @@ const newPixel = async (req, res) => {
 
 const updatePixel = async (req, res) => {
   const {
-    body: { password },
+    body: { "0": secuence },
     params: { id },
   } = req;
   try {
-    await pool.query(pixelQuerys.update, [password, id]);
+    await pool.query(pixelQuerys.update, [secuence, id]);
     return res.status(201).json({ message: `Pixel ${id} updated` });
   } catch (error) {
     return res.status(400).json({ message: error });

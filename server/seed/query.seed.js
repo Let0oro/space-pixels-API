@@ -1,18 +1,34 @@
 const queryTables = {
-  user: `CREATE TABLE IF NOT EXISTS users 
-  (id SERIAL PRIMARY KEY, 
-  name CHARACTER VARYING(60) UNIQUE NOT NULL, 
-  email CHARACTER VARYING(60) UNIQUE NOT NULL, 
-  password TEXT NOT NULL);`,
-  pixel: `CREATE TABLE IF NOT EXISTS pixel 
-  (id SERIAL PRIMARY KEY,
-  userid INT REFERENCES users(id), 
-  secuence TEXT[] NOT NULL);`,
-  score: `CREATE TABLE IF NOT EXISTS score 
-  (username  CHARACTER VARYING(60) REFERENCES users(name) PRIMARY KEY, 
-  points INT NOT NULL);`,
+  player: `CREATE TABLE IF NOT EXISTS player (
+  id SERIAL PRIMARY KEY,
+  name CHARACTER VARYING(30) UNIQUE NOT NULL,
+  coins INT NOT NULL DEFAULT 20,
+  active_ship_id INT NOT NULL DEFAULT 1,
+  following_id INT[]
+);`,
+
+  store: `CREATE TABLE IF NOT EXISTS store (
+  store_id SERIAL PRIMARY KEY
+);`,
+  
+  ship: `CREATE TABLE IF NOT EXISTS ship (
+  ship_id SERIAL PRIMARY KEY,
+  player_id INT REFERENCES player(id) ON DELETE CASCADE,
+  pixels TEXT[] NOT NULL,
+  store_id INT REFERENCES store(store_id),
+  from_other_id INT
+);`,
+
+  likes: `CREATE TABLE IF NOT EXISTS likes (
+  store_id INT REFERENCES store(store_id) ON DELETE CASCADE,
+  player_id INT REFERENCES player(id) ON DELETE CASCADE,
+  PRIMARY KEY (store_id, player_id)
+);`,
+  
+  score: `CREATE TABLE IF NOT EXISTS score (
+  playername CHARACTER VARYING(30) REFERENCES player(name) ON DELETE CASCADE,
+  points INT NOT NULL,
+  PRIMARY KEY (playername)
+);`,
 };
-
-const querySeedUser = `INSERT INTO users(name, email, password) VALUES ('jhon doe', 'test@test.es', 'pass1234')`;
-
-export { queryTables, querySeedUser };
+export { queryTables };

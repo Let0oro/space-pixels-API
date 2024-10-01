@@ -45,7 +45,7 @@ server.use(
     },
     store: new PgSession({
       pool,
-      tableName: "users_session",
+      tableName: "player_session",
       createTableIfMissing: true,
     }),
   })

@@ -1,5 +1,7 @@
 import pg from "pg";
-import { queryTables, querySeedUser } from "../seed/query.seed.js";
+import { queryTables } from "../seed/query.seed.js";
+import { generateCSV, insertData } from "../seed/generateData.js";
+// import { insertData } from "../seed/insertData.js";
 
 const { Pool } = pg;
 
@@ -22,38 +24,25 @@ checkDBConnection();
 
 
 const createTablesAndUser = async () => {
-  await pool.query("DROP TABLE IF EXISTS users CASCADE")
-  await pool.query("DROP TABLE IF EXISTS users_session CASCADE")
-  await pool.query("DROP TABLE IF EXISTS score CASCADE")
-  await pool.query("DROP TABLE IF EXISTS pixel CASCADE")
-  await pool.query(queryTables.user);
-  await pool.query(queryTables.pixel);
+  await pool.query("DROP TABLE IF EXISTS player CASCADE")
+  await pool.query("DROP TABLE IF EXISTS player_session")
+  await pool.query("DROP TABLE IF EXISTS store CASCADE ")
+  await pool.query("DROP TABLE IF EXISTS score")
+  await pool.query("DROP TABLE IF EXISTS likes")
+  await pool.query("DROP TABLE IF EXISTS ship")
+  await pool.query(queryTables.player);
+  await pool.query(queryTables.store);
+  await pool.query(queryTables.likes);
+  await pool.query(queryTables.ship);
   await pool.query(queryTables.score);
 
-  const users = await pool.query("SELECT * FROM users");
-  if (!users.rowCount) await pool.query(querySeedUser);
+  await generateCSV()
+  await insertData();
+
+  // await insertData();
+
 };
 
 createTablesAndUser();
-
-// const createSessionTable = async () => {
-//     const createTableQuery = `
-//       CREATE TABLE IF NOT EXISTS users_session (
-//         sid varchar NOT NULL COLLATE "default",
-//         sess json NOT NULL,
-//         expire timestamp(6) NOT NULL,
-//         PRIMARY KEY (sid)
-//       );
-//     `;
-  
-//     try {
-//       await pool.query(createTableQuery);
-//       console.log('Sessions table created or already exists.');
-//     } catch (error) {
-//       console.error('Errorcreating session table: ' + error);
-//     }
-//   };
-  
-//   createSessionTable();
 
 export default pool;
