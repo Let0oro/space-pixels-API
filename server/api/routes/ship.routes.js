@@ -18,14 +18,4 @@ shipRoutes.put("/:id", shipController.updateShip);
 shipRoutes.delete("/:id", shipController.deleteShip);
 shipRoutes.delete("/post/:id", shipController.unpostShip);
 
-
-shipRoutes.get("/store/", async (req, res) => {
-  try {
-    const {rows} = await pool.query("SELECT * FROM store;")
-    res.status(200).json(rows);
-  } catch (error) {
-    res.status(400).json({message: error})
-  }
-})
-
 export default shipRoutes;

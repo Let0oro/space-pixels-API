@@ -9,7 +9,7 @@ if (!fs.existsSync(csvDir)) {
   fs.mkdirSync(csvDir);
 }
 
-const NLIST = 10;
+const NLIST = 100;
 
 const playerCsvWriter = createCsvWriter.createObjectCsvWriter({
   path: `${csvDir}/player.csv`,

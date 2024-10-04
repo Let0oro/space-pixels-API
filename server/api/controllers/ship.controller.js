@@ -19,7 +19,11 @@ const getAllShips = async (req, res, next) => {
 
 const getPublicShips = async (req, res, next) => {
   try {
-    const ships = await pool.query("SELECT * FROM store JOIN ship ON ship.store_id = store.store_id;");
+    const ships = await pool.query(`
+      SELECT ship.ship_id, ship.store_id, player_id,  name, following_id, pixels 
+      FROM store 
+      JOIN ship ON ship.store_id = store.store_id 
+      JOIN player ON ship.player_id = player.id;`);
     if (!ships)
       return res
         .status(404)
@@ -70,6 +74,7 @@ const addPublicShipsToPlayer = async (req, res, next) => {
 
     await pool.query("INSERT INTO ship(player_id, pixels) VALUES($1, $2);", [user.id, ship.pixels]);
     await pool.query("INSERT INTO likes(store_id, player_id) VALUES($1, $2);", [ship.store_id, user.id]);
+    await pool.query("UPDATE ship SET from_other_id = $1 WHERE ship_id = LASTVAL() AND player_id = $2", [ id, user.id]);
     await pool.query("UPDATE player SET coins = (coins + 1) WHERE id = $1", [id]);
     return res.status(200).json({message: "Ship added to player library and like registered"});
   } catch (error) {
@@ -80,9 +85,11 @@ const addPublicShipsToPlayer = async (req, res, next) => {
 const postShip = async (req, res) => {
   const {id: ship_id} = req.params;
   try {
-    await pool.query("INSERT INTO store DEFAULT VALUES;");
-    await pool.query("UPDATE ship SET store_id = CURRVAL('store_store_id_seq') WHERE ship_id = $1;", [ship_id]);
-    return res.status(201).json({message: `ship ${ship_id} published`});
+    const {rowCount} = await pool.query("SELECT * FROM store;");
+    console.log({rowCount})
+    await pool.query("INSERT INTO store (store_id) VALUES ($1);", [(rowCount + 1)]);
+    await pool.query("UPDATE ship SET store_id = $1 WHERE ship_id = $2;", [(rowCount + 1), ship_id]);
+    return res.status(201).json({message: `ship ${ship_id} published`, n_store_id: rowCount + 1});
   } catch (error) {
     return res.status(400).json({ message: error });
   }
