@@ -1,10 +1,10 @@
 import express from "express";
 import scoreController from "../controllers/score.controller.js";
-import { getCookieUser } from "../../middleware/user.middleware.js";
+import { getCookiePlayer } from "../../middleware/player.middleware.js";
 
 const scoreRoutes = express.Router();
 
-scoreRoutes.post("/", getCookieUser, scoreController.newScore);
+scoreRoutes.post("/", getCookiePlayer, scoreController.newScore);
 scoreRoutes.get("/", scoreController.getAllScores)
 scoreRoutes.get("/:id", scoreController.getScore)
 scoreRoutes.put("/:id", scoreController.updateScore)

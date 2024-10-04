@@ -1,7 +1,7 @@
 import pg from "pg";
 import { queryTables } from "../seed/query.seed.js";
-import { generateCSV, insertData } from "../seed/generateData.js";
-// import { insertData } from "../seed/insertData.js";
+import { generateCSV } from "../seed/generateData.js";
+import { insertData } from "../seed/insertData.js";
 
 const { Pool } = pg;
 

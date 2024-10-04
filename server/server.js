@@ -1,6 +1,5 @@
 import express from "express";
-import userRoutes from "./api/routes/user.routes.js";
-import pixelRoutes from "./api/routes/pixel.routes.js";
+import shipRoutes from "./api/routes/ship.routes.js";
 import scoreRoutes from "./api/routes/score.routes.js";
 import { config } from "dotenv";
 import cookieParser from "cookie-parser";
@@ -9,6 +8,7 @@ import { v4 as uid } from "uuid";
 import pgSession from "connect-pg-simple";
 import pool from "./config/db.js";
 import cors from "cors";
+import playerRoutes from "./api/routes/player.routes.js";
 
 const PgSession = pgSession(session);
 
@@ -52,8 +52,8 @@ server.use(
 );
 server.use(express.urlencoded({ extended: false }));
 
-server.use("/api/user", userRoutes);
-server.use("/api/pixel", pixelRoutes);
+server.use("/api/player", playerRoutes);
+server.use("/api/ship", shipRoutes);
 server.use("/api/score", scoreRoutes);
 
 server.use("*", (res, req, next) => {
