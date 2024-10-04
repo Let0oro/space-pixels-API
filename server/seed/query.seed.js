@@ -25,9 +25,9 @@ const queryTables = {
 );`,
 
   likes: `CREATE TABLE IF NOT EXISTS likes (
+  id SERIAL PRIMARY KEY,
   store_id INT REFERENCES store(store_id) ON DELETE CASCADE,
-  player_id INT REFERENCES player(id) ON DELETE CASCADE,
-  PRIMARY KEY (store_id, player_id)
+  player_id INT REFERENCES player(id) ON DELETE CASCADE
 );`,
 
   score: `CREATE TABLE IF NOT EXISTS score (

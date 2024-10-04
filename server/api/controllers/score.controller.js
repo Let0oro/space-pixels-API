@@ -5,7 +5,7 @@ const scoreQuerys = genQuerys("score");
 
 const getAllScores = async (req, res, next) => {
   try {
-    const {rows: score} = await pool.query(scoreQuerys.getAll);
+    const {rows: score} = await pool.query("SELECT * FROM score JOIN player ON playername = name;");
     if (!score)
       return res
         .status(404)
