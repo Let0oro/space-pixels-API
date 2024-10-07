@@ -30,6 +30,8 @@ playerRoutes.get("/one/:id", playerController.getPlayer);
 playerRoutes.get("/session", playerController.getSessionPlayer);
 playerRoutes.put("/password/:id", hashPlayerPassword, playerController.updatePlayerPassword);
 playerRoutes.put("/select/:id", playerController.updatePlayerSelect);
+playerRoutes.put("/follow/:id", getCookiePlayer, playerController.followPlayer);
+playerRoutes.put("/unfollow/:id", getCookiePlayer, playerController.unfollowPlayer);
 playerRoutes.delete("/:id", auth, playerController.deletePlayer);
 
 export default playerRoutes;

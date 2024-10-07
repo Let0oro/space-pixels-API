@@ -13,7 +13,7 @@ const queryTables = {
 );`,
 
   store: `CREATE TABLE IF NOT EXISTS store (
-  store_id SERIAL PRIMARY KEY
+  store_id SERIAL PRIMARY KEY UNIQUE
 );`,
 
   ship: `CREATE TABLE IF NOT EXISTS ship (
@@ -26,7 +26,7 @@ const queryTables = {
 );`,
 
   likes: `CREATE TABLE IF NOT EXISTS likes (
-  id SERIAL PRIMARY KEY,
+  id SERIAL PRIMARY KEY UNIQUE,
   store_id INT REFERENCES store(store_id) ON DELETE CASCADE,
   player_id INT REFERENCES player(id) ON DELETE CASCADE
 );`,
