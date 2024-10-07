@@ -106,7 +106,12 @@ const loginPlayer = async (req, res) => {
 const logoutPlayer = async (req, res) => {
   try {
     // Session auth
-    req.session.clear();
+    console.log({session1: req.session})
+    // req.session.clear();
+    req.session.destroy();
+    req.session.playername = null;
+    req.session.playerId = null;
+    console.log({session2: req.session})
     return res.status(200).json({ message: "logoutPlayer" });
   } catch (error) {
     return res.status(400).json({ message: error });
