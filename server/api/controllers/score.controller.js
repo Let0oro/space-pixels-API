@@ -5,7 +5,9 @@ const scoreQuerys = genQuerys("score");
 
 const getAllScores = async (req, res, next) => {
   try {
-    const {rows: score} = await pool.query("SELECT * FROM score JOIN player ON playername = name;");
+    const { rows: score } = await pool.query(
+      "SELECT * FROM score JOIN player ON playername = name;"
+    );
     if (!score)
       return res
         .status(404)
@@ -28,15 +30,22 @@ const getScore = async (req, res) => {
 };
 
 const newScore = async (req, res) => {
-  console.log({username: req.body.user.name, points: req.body.points})
   const {
-    body: { points, user: {name} },
+    body: {
+      points,
+      player: { name, id },
+    },
   } = req;
   try {
     await pool.query(scoreQuerys.post, [name, points]);
-    return res
-      .status(201)
-      .json({ message: `points added to score table` });
+    if (points >= 20) {
+      const pointsToCoins = Math.floor(points / 20);
+      await pool.query("UPDATE player SET coins = coins + $1 WHERE id = $2", [
+        pointsToCoins,
+        id,
+      ]);
+    }
+    return res.status(201).json({ message: `points added to score table` });
   } catch (error) {
     return res.status(400).json({ message: error });
   }

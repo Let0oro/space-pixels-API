@@ -1,5 +1,5 @@
 const defaultShip =
-  "'#0000', '#0000', '#0000', '#0000', '#0000', '#0000', '#0000', '#0000', '#0000', '#0000', '#000000ff', '#000000ff', '#000000ff', '#000000ff', '#0000', '#0000', '#0000', '#000000ff', '#0000', '#0000', '#0000', '#000000ff', '#0000', '#0000', '#0000', '#000000ff', '#0000', '#0000', '#0000', '#000000ff', '#0000', '#0000', '#0000', '#0000', '#000000ff', '#000000ff', '#000000ff', '#000000ff', '#0000', '#0000', '#0000', '#0000', '#000000ff', '#000000ff', '#000000ff', '#000000ff', '#0000', '#0000', '#0000', '#000000ff', '#000000ff', '#0000', '#000000ff', '#000000ff', '#0000', '#000000ff', '#0000', '#0000', '#0000', '#0000', '#000000ff', '#000000ff', '#000000ff', '#0000'";
+  "'#0000', '#0000', '#0000', '#0000', '#0000', '#0000', '#0000', '#0000', '#0000', '#0000', '#0000', '#b90828ff', '#e40520ff', '#0000', '#0000', '#0000', '#0000', '#0000', '#860524ff', '#17b908ff', '#05e41bff', '#f8032fff', '#0000', '#0000', '#0000', '#79021fff', '#057902ff', '#0844b9ff', '#0348f8ff', '#17f803ff', '#f8032fff', '#0000', '#0000', '#79021fff', '#057902ff', '#17b908ff', '#05e41bff', '#17f803ff', '#f8032fff', '#0000', '#0000', '#79021fff', '#057902ff', '#17b908ff', '#05e41bff', '#17f803ff', '#f8032fff', '#0000', '#0000', '#0000', '#8f8a8aff', '#da8403ff', '#da8403ff', '#c1bdbdff', '#0000', '#0000', '#0000', '#0000', '#0000', '#da8403ff', '#da8403ff', '#0000', '#0000', '#0000'";
 
 const queryTables = {
   player: `CREATE TABLE IF NOT EXISTS player (
@@ -8,7 +8,7 @@ const queryTables = {
   email CHARACTER VARYING(60) UNIQUE NOT NULL,
   password TEXT  NOT NULL,
   coins INT NOT NULL DEFAULT 20,
-  active_ship_id INT DEFAULT 1,
+  active_ship_id INT,
   following_id INT[]
 );`,
 
@@ -33,7 +33,7 @@ const queryTables = {
 
   score: `CREATE TABLE IF NOT EXISTS score (
   playername CHARACTER VARYING(30) REFERENCES player(name) ON DELETE CASCADE,
-  points INT NOT NULL,
+  points INT NOT NULL DEFAULT 0,
   PRIMARY KEY (playername)
 );`,
 };
