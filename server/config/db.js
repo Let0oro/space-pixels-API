@@ -18,31 +18,26 @@ const checkDBConnection = async () => {
     "SELECT TRUE AS connected_to_database"
   );
   console.log(rows);
-  await pool.query("DROP TABLE IF EXISTS users")
 };
 checkDBConnection();
 
-
-const createTablesAndUser = async () => {
-  await pool.query("DROP TABLE IF EXISTS player CASCADE")
-  await pool.query("DROP TABLE IF EXISTS player_session")
-  await pool.query("DROP TABLE IF EXISTS store CASCADE ")
-  await pool.query("DROP TABLE IF EXISTS score")
-  await pool.query("DROP TABLE IF EXISTS likes")
-  await pool.query("DROP TABLE IF EXISTS ship")
+const createTablesAndSeed = async () => {
+  await pool.query("DROP TABLE IF EXISTS player CASCADE");
+  await pool.query("DROP TABLE IF EXISTS player_session");
+  await pool.query("DROP TABLE IF EXISTS store CASCADE ");
+  await pool.query("DROP TABLE IF EXISTS score");
+  await pool.query("DROP TABLE IF EXISTS likes");
+  await pool.query("DROP TABLE IF EXISTS ship");
   await pool.query(queryTables.player);
   await pool.query(queryTables.store);
   await pool.query(queryTables.likes);
   await pool.query(queryTables.ship);
   await pool.query(queryTables.score);
 
-  await generateCSV()
+  await generateCSV();
   await insertData();
-
-  // await insertData();
-
 };
 
-createTablesAndUser();
+createTablesAndSeed();
 
 export default pool;
