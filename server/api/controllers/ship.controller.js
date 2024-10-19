@@ -8,12 +8,10 @@ const getAllShips = async (req, res, next) => {
     // const ships = await pool.query(shipQuerys.getAll);
     const ships = await pool.query("SELECT * FROM ship;");
     if (!ships)
-      return res
-        .status(404)
-        .json({ message: "Not founded data at table ship" });
+      return res.status(404).json({ error: "Not founded data at table ship" });
     return res.status(200).json(ships.rows);
   } catch (error) {
-    return res.status(400).json({ message: error });
+    return res.status(400).json({ error });
   }
 };
 
@@ -25,12 +23,10 @@ const getPublicShips = async (req, res, next) => {
       JOIN ship ON ship.store_id = store.store_id 
       JOIN player ON ship.player_id = player.id;`);
     if (!ships)
-      return res
-        .status(404)
-        .json({ message: "Not founded data at table ship" });
+      return res.status(404).json({ error: "Not founded data at table ship" });
     return res.status(200).json(ships.rows);
   } catch (error) {
-    return res.status(400).json({ message: error });
+    return res.status(400).json({ error });
   }
 };
 
@@ -41,12 +37,10 @@ const getPublicShip = async (req, res, next) => {
       id,
     ]);
     if (!ships)
-      return res
-        .status(404)
-        .json({ message: "Not founded data at table ship" });
+      return res.status(404).json({ error: "Not founded data at table ship" });
     return res.status(200).json(ships.rows);
   } catch (error) {
-    return res.status(400).json({ message: error });
+    return res.status(400).json({ error });
   }
 };
 
@@ -61,9 +55,7 @@ const getPublicShipsOfPlayer = async (req, res, next) => {
       [id != null ? id : player_id]
     );
     if (!ships)
-      return res
-        .status(404)
-        .json({ message: "Not founded data at table ship" });
+      return res.status(404).json({ error: "Not founded data at table ship" });
     return res.status(200).json(ships.rows);
   } catch (error) {
     return res.status(400).json({ error });
@@ -72,25 +64,18 @@ const getPublicShipsOfPlayer = async (req, res, next) => {
 
 const addOtherShipFromPlayer = async (req, res) => {
   const { id: otherplayerid } = req.params;
-  console.log(req.body);
   const {
     body: { player, store_id, price },
   } = req;
   try {
-    console.log({ store_id });
     const {
       rows: [{ pixels }],
       rowCount,
     } = await pool.query("SELECT pixels FROM ship WHERE store_id = $1;", [
       store_id,
     ]);
-    console.log({ rowCount });
     if (!rowCount)
-      return res
-        .status(404)
-        .json({ message: "Not founded data at table ship" });
-
-    console.log({ price });
+      return res.status(404).json({ error: "Not founded data at table ship" });
 
     const pixelsFormated = pixels.map((px) => `'${px}'`).join(",");
     await pool.query(
@@ -119,17 +104,14 @@ const likeShip = async (req, res) => {
     body: { player, store_id },
   } = req;
 
-  console.log({ store_id });
   try {
     await pool.query("INSERT INTO likes(store_id, player_id) VALUES($1, $2);", [
       store_id,
       player.id,
     ]);
-    console.log("INSERTED NEW LIKE ");
     await pool.query("UPDATE player SET coins = (coins + 1) WHERE id = $1;", [
       otherplayerid,
     ]);
-    console.log("UPDATED USER COINS TO COUNT +1");
     return res.status(201).json({ message: "Liked!" });
   } catch (error) {
     return res.status(400).json({ error });
@@ -155,12 +137,10 @@ const postShip = async (req, res) => {
     } = await pool.query(
       "INSERT INTO store DEFAULT VALUES RETURNING store_id AS last_store_id;"
     );
-    console.log({last_store_id});
-    await pool.query("UPDATE ship SET (price, store_id) = ($1, $2) WHERE ship_id = $3;", [
-      new_price,
-      last_store_id,
-      ship_id,
-    ]);
+    await pool.query(
+      "UPDATE ship SET (price, store_id) = ($1, $2) WHERE ship_id = $3;",
+      [new_price, last_store_id, ship_id]
+    );
     return res.status(201).json({
       message: `ship ${ship_id} published at price ${new_price} in store position n_store_id: ${last_store_id}`,
     });
@@ -172,15 +152,6 @@ const postShip = async (req, res) => {
 const unpostShip = async (req, res) => {
   const { id: store_id } = req.params;
   try {
-    /*
-    TAMBIÉN PODRíA CREAR ESTA REGLA tras la creación de tablas: 
-    CREATE RULE "_PREV_CASCADE" AS ON DELETE TO ship DO ALSO (
-    UPDATE ship SET store_id = NULL
-    WHERE (
-      SELECT store_id FROM store WHERE store.store_id = ship.store_id 
-      ) IS NULL;
-  );
-    */
     await pool.query("UPDATE ship SET store_id = NULL WHERE store_id = $1", [
       store_id,
     ]);
@@ -227,10 +198,10 @@ const getShip = async (req, res) => {
   const { id } = req.params;
   try {
     const ship = await pool.query(shipQuerys.get, [id]);
-    if (!ship) return res.status(404).json({ message: "Ship not found" });
+    if (!ship) return res.status(404).json({ error: "Ship not found" });
     return res.status(200).json(ship.rows);
   } catch (error) {
-    return res.status(400).json({ message: error });
+    return res.status(400).json({ error });
   }
 };
 
@@ -243,8 +214,7 @@ const newShip = async (req, res) => {
     await pool.query(shipQuerys.post, [player.id, arrFormated]);
     return res.status(201).json({ message: `Ship added to ship table` });
   } catch (error) {
-    console.error({ error });
-    return res.status(400).json({ message: "Error creating a new ship" });
+    return res.status(400).json({ error: "Error creating a new ship" });
   }
 };
 
@@ -257,7 +227,7 @@ const updateShip = async (req, res) => {
     await pool.query(shipQuerys.update, [secuence, id]);
     return res.status(201).json({ message: `Ship ${id} updated` });
   } catch (error) {
-    return res.status(400).json({ message: error });
+    return res.status(400).json({ error });
   }
 };
 
@@ -269,7 +239,6 @@ const deleteShip = async (req, res) => {
     const {
       rows: [{ store_id }],
     } = await pool.query("SELECT store_id FROM ship WHERE ship_id = $1", [id]);
-    console.log({ store_id });
     await pool.query(shipQuerys.delete, [id]);
     if (store_id != null)
       await pool.query("DELETE FROM store WHERE store_id = $1", [store_id]);
@@ -278,11 +247,10 @@ const deleteShip = async (req, res) => {
     } = await pool.query(
       "SELECT store_id FROM store ORDER BY store_id DESC LIMIT 1;"
     );
-    console.log({ lastStoreID });
 
     return res.status(200).json({ message: `Ship ${id} has been deleted` });
   } catch (error) {
-    return res.status(400).json({ message: error });
+    return res.status(400).json({ error });
   }
 };
 

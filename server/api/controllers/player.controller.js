@@ -7,11 +7,6 @@ const playerQuerys = genQuerys("player");
 const getExistedPlayerQuery = `SELECT * FROM player WHERE name = $1 OR email = $2`;
 
 const getSessionPlayer = async (req, res) => {
-  console.log({ session: req.session });
-  console.log({ baseURL: req.route });
-  console.log("Req session boolean: ", !!req.session);
-  console.log("Req session PlayerID boolean: ", !!req.session.playerId);
-  console.log("Req session PlayerName  boolean: ", !!req.session.playername);
   if (req.session && (req.session.playerId || req.session.playername)) {
     const { playername: name, playerId: id } = req.session;
     const {
@@ -22,7 +17,7 @@ const getSessionPlayer = async (req, res) => {
     ]);
     return res.status(200).json(player);
   } else {
-    return res.status(404).json({ message: "session expired" });
+    return res.status(404).json({ error: "session expired or nonexistent" });
   }
 };
 
@@ -32,10 +27,10 @@ const getAllPlayers = async (req, res, next) => {
     if (!player)
       return res
         .status(404)
-        .json({ message: "Not founded data at table player" });
+        .json({ error: "Not founded data at table player" });
     return res.status(200).json(player.rows);
   } catch (error) {
-    return res.status(400).json({ message: error });
+    return res.status(400).json({ error });
   }
 };
 
@@ -44,10 +39,10 @@ const getPlayer = async (req, res) => {
   try {
     const player = await pool.query(playerQuerys.get, [id]);
     if (!player.rowCount)
-      return res.status(404).json({ message: "Player not found" });
+      return res.status(404).json({ error: "Player not found" });
     return res.status(200).json(player.rows);
   } catch (error) {
-    return res.status(400).json({ message: error });
+    return res.status(400).json({ error });
   }
 };
 
@@ -62,16 +57,14 @@ const newPlayer = async (req, res) => {
     ]);
     if (existedPlayer.rowCount)
       return res.status(400).json({
-        message:
-          "Player already exists with this name or email, try with other",
+        error: "Player already exists with this name or email, try with other",
       });
     await pool.query(playerQuerys.post, [name, email, password]);
     return res
       .status(201)
       .json({ message: `Player ${name} added to player table` });
   } catch (error) {
-    console.error(error);
-    return res.status(400).json({ message: error });
+    return res.status(400).json({ error });
   }
 };
 
@@ -107,7 +100,7 @@ const logoutPlayer = async (req, res) => {
   try {
     req.session.playername = null;
     req.session.playerId = null;
-    req.session.destroy();
+    req.session.clear();
     return res.status(200).json({ message: "logoutPlayer" });
   } catch (error) {
     return res.status(400).json({ error });
@@ -140,13 +133,9 @@ const unfollowPlayer = async (req, res) => {
       rows: [{ following_id: currentFollowing }],
     } = await pool.query("SELECT following_id FROM player WHERE id = $1", [id]);
 
-    console.log("currentFollowing");
-    console.log(currentFollowing);
     const newFollowinfArr = currentFollowing.filter(
       (fow) => fow != otherPlayer
     );
-    console.log("newFollowinfArr");
-    console.log(newFollowinfArr);
 
     if (!newFollowinfArr.length) {
       await pool.query(
@@ -154,7 +143,6 @@ const unfollowPlayer = async (req, res) => {
         [id, otherPlayer]
       );
     } else {
-      console.log(newFollowinfArr.join(", "));
       await pool.query(
         "UPDATE player SET following_id = ARRAY[$1::integer] WHERE id = $2 AND following_id IS NOT NULL AND $3 = ANY(following_id);",
         [newFollowinfArr.join(", "), id, otherPlayer]
@@ -162,7 +150,9 @@ const unfollowPlayer = async (req, res) => {
     }
     return res.status(201).json({ message: `Following ${otherPlayer}!` });
   } catch (error) {
-    return res.status(400).json({ error: "Error at unfollow player" + error });
+    return res
+      .status(400)
+      .json({ error: "Error at unfollow player: " + error });
   }
 };
 
@@ -175,7 +165,7 @@ const updatePlayerPassword = async (req, res) => {
     await pool.query(playerQuerys.update, [password, id]);
     return res.status(201).json({ message: `Player ${id} password updated` });
   } catch (error) {
-    return res.status(400).json({ message: error });
+    return res.status(400).json({ error });
   }
 };
 
@@ -191,7 +181,7 @@ const updatePlayerSelect = async (req, res) => {
       .status(201)
       .json({ message: `Player ${id} selected ship updated` });
   } catch (error) {
-    return res.status(400).json({ message: error });
+    return res.status(400).json({ error });
   }
 };
 
@@ -203,7 +193,7 @@ const deletePlayer = async (req, res) => {
     await pool.query(playerQuerys.delete, [id]);
     return res.status(200).json({ message: `Player ${id} has been deleted` });
   } catch (error) {
-    return res.status(400).json({ message: error });
+    return res.status(400).json({ error });
   }
 };
 
