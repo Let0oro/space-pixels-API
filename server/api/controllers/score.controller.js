@@ -65,6 +65,5 @@ export default {
   getAllScores,
   getScore,
   newScore,
-  updateScore,
   deleteScore,
 };

@@ -17,7 +17,7 @@ const getSessionPlayer = async (req, res) => {
     ]);
     return res.status(200).json(player);
   } else {
-    return res.status(404).json({ error: "session expired" });
+    return res.status(404).json({ error: "session expired or nonexistent" });
   }
 };
 
