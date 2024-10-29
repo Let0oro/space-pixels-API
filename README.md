@@ -1,7 +1,5 @@
 # space-pixels-API
 
----
-
 ### General Project Description
 
 This JavaScript backend powers a pixel art video game where users can create custom ships and engage in a pseudo-social network through scores, followers, likes, and an in-game economy. PostgreSQL is the primary database, storing user data, ships, and statistics, and it runs in a Docker container. An Excel file is used to auto-generate sample data, creating a dynamic, fully integrated gaming experience.
