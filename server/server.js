@@ -10,21 +10,22 @@ import pool from "./config/db.js";
 import cors from "cors";
 import playerRoutes from "./api/routes/player.routes.js";
 
+config();
 const PgSession = pgSession(session);
 
-export const EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7;
-
-config();
-
-const port = 3000;
+export const EXPIRE_TIME_ONE_WEEK = 1000 * 60 * 60 * 24 * 7;
 
 const server = express();
+const port = 3000;
+
 server.use(express.json());
 server.use(cookieParser());
+server.use(express.urlencoded({ extended: false }));
+
 server.use(
   cors({
+    origin: "https://spacepixels.netlify.app",
     credentials: true,
-    origin: "http://localhost:5173",
     optionsSuccessStatus: 200,
   })
 );
@@ -32,16 +33,16 @@ server.use(
   session({
     secret: process.env.SECRET_SESSION,
     resave: false,
-    saveUninitialized: false,
-
-    // unset: "destroy",
-    genid: function () {
-      return uid();
-    },
+    saveUninitialized: true,
+    genid: () => uid(),
     cookie: {
       httpOnly: true,
-      maxAge: EXPIRE_TIME,
-      sameSite: "lax",
+      maxAge: EXPIRE_TIME_ONE_WEEK,
+      sameSite: "lax", // dev
+      // sameSite: "none", // production
+      secure: true, // production
+      path: "/",
+      domain: ".netlify.app"
     },
     store: new PgSession({
       pool,
@@ -50,16 +51,15 @@ server.use(
     }),
   })
 );
-server.use(express.urlencoded({ extended: false }));
 
 server.use("/api/player", playerRoutes);
 server.use("/api/ship", shipRoutes);
 server.use("/api/score", scoreRoutes);
 
-server.use("*", (res, req, next) => {
+server.use("*", (req, res, next) => {
   const err = new Error("Route not found");
   err.status = 404;
   next(err);
 });
 
-server.listen(3000, () => console.log(`Server running on port ${port}`));
+server.listen(port, () => console.log(`Server running on port ${port}`));

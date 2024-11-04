@@ -1,4 +1,50 @@
+# services: 
+#   db:
+#     image: postgres
+#     container_name: db
+#     restart: always
+#     tty: true
+#     environment: 
+#       - POSTGRES_PASSWORD=pass
+#       - POSTGRES_USER=user
+#       - POSTGRES_DB=db123
+#       - POSTGRES_HOST_AUTH_METHOD=trust
+#     ports: 
+#       - "5432:5432"
+  
+#   server:
+#     # build:
+#     #   context: ./app  # Ajusta esta ruta si es necesario
+#     image: my-server
+#     container_name: server
+#     working_dir: /usr/src/app
+#     tty: true
+#     ports: 
+#       - "3000:3000"
+#     command: npm run server
+#     depends_on:
+#       - db
+  
+#   nginx:
+#     build:
+#       context: ./nginx  # Ajusta esta ruta si es necesario
+#       dockerfile: Dockerfile
+#     container_name: nginx
+#     ports: 
+#     - "443:443"  # Mapea el puerto 3000 del contenedor al puerto 3000 del host
+#     depends_on:
+#       - server
 
+
+
+
+
+
+
+
+
+
+# -------------------------------------
 version: "3"
 services: 
   db:
@@ -10,6 +56,7 @@ services:
       - POSTGRES_PASSWORD=pass
       - POSTGRES_USER=user
       - POSTGRES_DB=db123
+      - POSTGRES_HOST_AUTH_METHOD=trust
     ports: 
       - "5432:5432"
   server:

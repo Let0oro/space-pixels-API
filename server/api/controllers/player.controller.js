@@ -1,3 +1,4 @@
+import session from "express-session";
 import pool from "../../config/db.js";
 import genQuerys from "./querys.js";
 import bcrypt from "bcrypt";
@@ -7,6 +8,7 @@ const playerQuerys = genQuerys("player");
 const getExistedPlayerQuery = `SELECT * FROM player WHERE name = $1 OR email = $2`;
 
 const getSessionPlayer = async (req, res) => {
+  console.log({ reqSessionFromCall: req.session });
   if (req.session && (req.session.playerId || req.session.playername)) {
     const { playername: name, playerId: id } = req.session;
     const {
@@ -88,7 +90,7 @@ const loginPlayer = async (req, res) => {
     // Session auth
     // if (existedPlayer.rows[0].admin) req.session.admin = true;
 
-    return res.status(200).json({ message: "loginPlayer" });
+    return res.status(201).json({ message: "loginPlayer" });
   } catch (error) {
     return res
       .status(400)
@@ -98,9 +100,9 @@ const loginPlayer = async (req, res) => {
 
 const logoutPlayer = async (req, res) => {
   try {
-    req.session.playername = null;
-    req.session.playerId = null;
-    req.session.clear();
+    // req.session.playername = null;
+    // req.session.playerId = null;
+    // req.session.clear();
     return res.status(200).json({ message: "logoutPlayer" });
   } catch (error) {
     return res.status(400).json({ error });

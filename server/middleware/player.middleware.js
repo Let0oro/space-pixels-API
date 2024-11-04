@@ -34,23 +34,20 @@ const hashPlayerPassword = async (req, res, next) => {
 };
 
 const getCookiePlayer = async (req, res, next) => {
-  if (
-    req.body.password ||
-    req.body.name ||
-    req.body.email ||
-    req.body.nameoremail
-  )
+  console.log("GET COOKIE MIDD")
+  console.log({ bodyGet: req.body });
+  if (req.body.password || req.body.name || req.body.email || req.body.nameoremail) {
     return next();
+  }
+
+  console.log({ sessionGet: req.session });
 
   if (!req.session.playerId) {
     return res.status(401).json({ error: "No has iniciado sesión" });
   }
 
   try {
-    const {
-      rows: [player],
-      rowCount,
-    } = await pool.query("SELECT * FROM player WHERE id=$1", [
+    const { rows: [player], rowCount } = await pool.query("SELECT * FROM player WHERE id=$1", [
       req.session.playerId,
     ]);
 
@@ -58,40 +55,57 @@ const getCookiePlayer = async (req, res, next) => {
       return res.status(404).json({ error: "Player not found" });
     }
 
-    req.body = { ...req.body, player };
+    req.body.player = player;
     next();
   } catch (error) {
     return res.status(400).json({ error });
   }
 };
 
+
 async function setCookiePlayer(req, res, next) {
-  const { name, nameoremail } = req?.body || { name: null, nameoremail: null };
+  console.log("SET COOKIE MIDD")
+  const { name, nameoremail } = req.body || {};
   const { path } = req;
+
   try {
-    const {
-      rows: [playerObjID],
-      rowCount: exists,
-    } = nameoremail
+    const { rows: [playerObjID], rowCount: exists } = nameoremail
       ? await pool.query("SELECT id FROM player WHERE name=$1 OR email=$2", [
-          nameoremail,
-          nameoremail,
-        ])
+        nameoremail,
+        nameoremail,
+      ])
       : { rowCount: 0, rows: [{ id: null }] };
 
-    if (!exists && path == "/login")
+    if (!exists && path === "/login") {
       return res.status(404).json({ error: "Player not exists" });
+    }
 
-    const {
-      rows: [{ id: lastID }],
-    } = await pool.query("SELECT id FROM player ORDER BY id DESC");
+    const { rows: [{ id: lastID }] } = await pool.query("SELECT id FROM player ORDER BY id DESC");
+
+    // req.session.regenerate((err) => {
+    //   if (err) {
+    //     return res.status(500).json({ error: "Error regenerating session" });
+    //   }
+    // })
+
     req.session.playerId = exists ? playerObjID.id : lastID + 1;
     req.session.playername = name || req.session.playername;
+
+    // console.log({ sessionSet: req.session, playerOpts: playerObjID });
+
+    // console.log("Datos de sesión guardados:", req.session);
     next();
+    // await req.session.save((err) => {
+    //   if (err) {
+    //     console.error("Error saving session:", err);
+    //     return res.status(500).json({ error: "Failed to save session" });
+    //   }
+    //   console.log("Session successfully saved:", req.session);
+    //   next();
+    // });;
   } catch (error) {
-    return res
-      .status(400)
-      .json({ error: `Error adding info to sessions: ${error}` });
+    console.error("Error in setCookiePlayer:", error);
+    return res.status(400).json({ error: `Error adding info to sessions: ${error}` });
   }
 }
 

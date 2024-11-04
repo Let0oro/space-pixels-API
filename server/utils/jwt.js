@@ -1,5 +1,5 @@
 const { sign, verify } = require("jsonwebtoken");
-const { EXPIRE_TIME } = require("../server");
+const { EXPIRE_TIME_ONE_WEEK } = require("../server");
 require("dotenv").config();
 
 const SECRET_KEY = process.env.SECRET_KEY;
@@ -27,7 +27,7 @@ async function generateKey(req) {
       },
       process.env.SECRET_KEY,
       {
-        expiresIn: EXPIRE_TIME,
+        expiresIn: EXPIRE_TIME_ONE_WEEK,
       }
     );
   } catch (error) {
