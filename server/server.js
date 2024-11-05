@@ -24,8 +24,7 @@ server.use(express.urlencoded({ extended: false }));
 
 server.use(
   cors({
-    // origin: "https://spacepixels.netlify.app",
-    origin: "http://localhost:5173",
+    origin: "https://spacepixels.netlify.app",
     credentials: true,
     optionsSuccessStatus: 200,
   })
@@ -39,11 +38,10 @@ server.use(
     cookie: {
       httpOnly: true,
       maxAge: EXPIRE_TIME_ONE_WEEK,
-      sameSite: "lax", // dev
-      // sameSite: "none", // production
-      secure: true, // production
+      sameSite: "none",
+      secure: true,
       path: "/",
-      // domain: ".netlify.app"
+      domain: ".netlify.app"
     },
     store: new PgSession({
       pool,
