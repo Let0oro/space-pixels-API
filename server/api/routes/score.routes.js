@@ -4,7 +4,8 @@ import { getCookiePlayer } from "../../middleware/player.middleware.js";
 
 const scoreRoutes = express.Router();
 
-scoreRoutes.post("/", getCookiePlayer, scoreController.newScore);
+// scoreRoutes.post("/", getCookiePlayer, scoreController.newScore);
+scoreRoutes.post("/", scoreController.newScore);
 scoreRoutes.get("/", scoreController.getAllScores);
 scoreRoutes.get("/:id", scoreController.getScore);
 scoreRoutes.delete("/:id", scoreController.deleteScore);

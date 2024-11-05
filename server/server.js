@@ -24,7 +24,8 @@ server.use(express.urlencoded({ extended: false }));
 
 server.use(
   cors({
-    origin: "https://spacepixels.netlify.app",
+    // origin: "https://spacepixels.netlify.app",
+    origin: "http://localhost:5173",
     credentials: true,
     optionsSuccessStatus: 200,
   })
@@ -42,7 +43,7 @@ server.use(
       // sameSite: "none", // production
       secure: true, // production
       path: "/",
-      domain: ".netlify.app"
+      // domain: ".netlify.app"
     },
     store: new PgSession({
       pool,
