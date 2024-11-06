@@ -11,7 +11,8 @@ const pool = new Pool({
   database: "db123",
   password: "pass",
   port: 5432,
-  // ssl: { rejectUnauthorized: false },
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false },
 });
 
 const checkDBConnection = async () => {

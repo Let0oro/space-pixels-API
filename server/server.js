@@ -16,7 +16,7 @@ const PgSession = pgSession(session);
 export const EXPIRE_TIME_ONE_WEEK = 1000 * 60 * 60 * 24 * 7;
 
 const server = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 server.use(express.json());
 server.use(cookieParser());

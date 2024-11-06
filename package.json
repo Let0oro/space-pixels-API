@@ -4,12 +4,9 @@
   "description": "",
   "main": "./server/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "server": "nodemon .",
-    "docker:build ": "docker-compose up --build",
-    "docker:run": "docker-compose up",
-    "docker:build-img": "docker build -t my-server .",
-    "docker:restart": "docker system prune && docker build -t my-server .  && docker-compose up --build"
+    "start": "node .",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
