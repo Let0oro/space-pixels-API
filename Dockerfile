@@ -1,3 +1,33 @@
+# # Dockerfile del Servidor
+# ARG NODE_VERSION=20.12.2
+
+# # Usa la imagen oficial de Node.js como base
+# FROM node:${NODE_VERSION}-alpine
+
+# # Establece el directorio de trabajo dentro del contenedor
+# WORKDIR /usr/src/app
+
+# # Copia los archivos package.json y package-lock.json
+# COPY package*.json ./
+
+# # Instala las dependencias de la aplicación
+# RUN npm install
+
+# # Copia el resto del código fuente al contenedor
+# COPY . .
+
+# # Expone el puerto 3000 para el servidor
+# EXPOSE 3000
+
+# # Comando para ejecutar el servidor
+# CMD ["npm", "run", "server"]
+
+
+
+# --------------------------
+
+
+
 # ARG NODE_VERSION=20.12.2
 
 # # Usa la imagen oficial de Node.js como base
