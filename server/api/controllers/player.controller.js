@@ -39,7 +39,7 @@ const getAllPlayers = async (req, res, next) => {
 const getPlayer = async (req, res) => {
   const { id } = req.params;
   try {
-    const player = await pool.query("SELECT * FROM player WHERE name=$1", [id]);
+    const player = await pool.query("SELECT * FROM player WHERE name=$1 OR email=$1", [id]);
     if (!player.rowCount)
       return res.status(404).json({ error: "Player not found" });
     return res.status(200).json(player.rows);
