@@ -76,10 +76,15 @@ const loginPlayer = async (req, res) => {
       body: { nameoremail, password },
     } = req;
 
+    console.log({ nameoremail })
+
     const {
       rowCount: existedPlayer,
       rows: [{ password: playerPassword }],
     } = await pool.query(getExistedPlayerQuery, [nameoremail, nameoremail]);
+
+
+    console.log({ existedPlayer })
 
     if (!existedPlayer)
       return res.status(400).json({ message: "This player doesn't exists" });
