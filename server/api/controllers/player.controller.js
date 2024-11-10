@@ -81,10 +81,10 @@ const loginPlayer = async (req, res) => {
     const {
       rowCount: existedPlayer,
       rows: [{ password: playerPassword }],
-    } = await pool.query(getExistedPlayerQuery, [nameoremail, nameoremail]);
+    } = await pool.query('SELECT * FROM player WHERE name=$1 OR email=$1', [nameoremail]);
 
 
-    console.log({ existedPlayer })
+    console.log({ existedPlayer, rows })
 
     if (!existedPlayer)
       return res.status(400).json({ message: "This player doesn't exists" });
@@ -98,7 +98,7 @@ const loginPlayer = async (req, res) => {
   } catch (error) {
     return res
       .status(400)
-      .json({ message: "Error during login process", error });
+      .json({ message: "Error during login process" + error });
   }
 };
 
