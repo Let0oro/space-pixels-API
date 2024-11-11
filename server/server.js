@@ -24,7 +24,7 @@ server.use(express.urlencoded({ extended: false }));
 
 server.use(
   cors({
-    origin: ["https://spacepixels.netlify.app", "https://space-pixels.vercel.app"],
+    origin: ["https://spacepixels.netlify.app", "https://spacepixels.netlify.app/"],
     credentials: true,
     optionsSuccessStatus: 200,
   })
