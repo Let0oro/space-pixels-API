@@ -51,18 +51,20 @@ server.use(
   })
 );
 
-server.use("/api/", (req, res) => {
+const simpleConnection = async (req, res) => {
   try {
-    const { rowCount } = pool.query("SELECT * FROM player;")
+    const { rowCount } = await pool.query("SELECT * FROM player;")
     res.status(200).json({ rowCount })
   } catch (error) {
     res.status(400).json({ error })
-
   }
-});
+}
+
 server.use("/api/player", playerRoutes);
 server.use("/api/ship", shipRoutes);
 server.use("/api/score", scoreRoutes);
+server.use("/api/", simpleConnection);
+server.use("/", simpleConnection);
 
 server.use("*", (req, res, next) => {
   const err = new Error("Route not found: " + req.path + ", url: " + req.url);
