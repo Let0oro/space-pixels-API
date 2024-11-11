@@ -80,16 +80,17 @@ const loginPlayer = async (req, res) => {
 
     const {
       rowCount: existedPlayer,
-      rows: [{ password: playerPassword }],
+      rows: [player],
     } = await pool.query('SELECT * FROM player WHERE name=$1 OR email=$1', [String(nameoremail)]);
 
+    console.log({ player })
 
     console.log({ existedPlayer, rows })
 
-    if (!existedPlayer || !playerPassword)
+    if (!existedPlayer || !player.playerPassword)
       return res.status(404).json({ error: "This player doesn't exists" });
 
-    const isValidPassword = await bcrypt.compare(password, playerPassword);
+    const isValidPassword = await bcrypt.compare(password, player.playerPassword);
     if (!isValidPassword)
       return res.status(400).json({ error: "Incorrect password" });
 
