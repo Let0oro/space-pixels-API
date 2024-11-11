@@ -81,7 +81,7 @@ const loginPlayer = async (req, res) => {
     const {
       rowCount: existedPlayer,
       rows: [{ password: playerPassword }],
-    } = await pool.query('SELECT * FROM player WHERE name=$1 OR email=$1', [nameoremail]);
+    } = await pool.query('SELECT * FROM player WHERE name=$1 OR email=$1', [String(nameoremail)]);
 
 
     console.log({ existedPlayer, rows })
