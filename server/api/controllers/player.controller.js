@@ -76,7 +76,7 @@ const loginPlayer = async (req, res) => {
       body: { nameoremail, password },
     } = req;
 
-    console.log({ nameoremail })
+    console.log({ body: req.body, nameoremail, password })
 
     const {
       rowCount: existedPlayer,
