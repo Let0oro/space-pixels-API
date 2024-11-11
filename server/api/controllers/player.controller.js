@@ -86,19 +86,19 @@ const loginPlayer = async (req, res) => {
 
     console.log({ existedPlayer, rows })
 
-    if (!existedPlayer)
-      return res.status(400).json({ message: "This player doesn't exists" });
+    if (!existedPlayer || !playerPassword)
+      return res.status(404).json({ error: "This player doesn't exists" });
 
     const isValidPassword = await bcrypt.compare(password, playerPassword);
     if (!isValidPassword)
-      return res.status(400).json({ message: "Incorrect password" });
+      return res.status(400).json({ error: "Incorrect password" });
 
 
     return res.status(201).json({ message: "loginPlayer" });
   } catch (error) {
     return res
       .status(400)
-      .json({ message: "Error during login process" + error });
+      .json({ error: "Error during login process: " + error });
   }
 };
 

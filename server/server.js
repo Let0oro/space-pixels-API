@@ -56,7 +56,7 @@ server.use("/api/ship", shipRoutes);
 server.use("/api/score", scoreRoutes);
 
 server.use("*", (req, res, next) => {
-  const err = new Error("Route not found");
+  const err = new Error("Route not found" + req.path);
   err.status = 404;
   next(err);
 });

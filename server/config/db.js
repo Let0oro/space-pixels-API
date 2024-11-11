@@ -17,11 +17,13 @@ const pool = new Pool({
 
 const checkDBConnection = async () => {
   const { rows, rowCount, fields } = await pool.query(
-    "SELECT TRUE AS connected_to_database"
+    "SELECT TRUE AS connected_to_database;"
   );
   console.log(rows);
+  const { rowCount: exist } = await pool.query("SELECT * FROM player;")
+  if (!exist) createTablesAndSeed();
 };
-checkDBConnection();
+
 
 const createTablesAndSeed = async () => {
   await pool.query("DROP TABLE IF EXISTS player CASCADE");
@@ -39,7 +41,6 @@ const createTablesAndSeed = async () => {
   await generateCSV();
   await insertData();
 };
-
-createTablesAndSeed();
+checkDBConnection();
 
 export default pool;
