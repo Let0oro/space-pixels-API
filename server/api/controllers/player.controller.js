@@ -78,18 +78,18 @@ const loginPlayer = async (req, res) => {
 
     console.log({ body: req.body, nameoremail, password })
 
-    const player = await pool.query('SELECT * FROM player WHERE name=$1 OR email=$1', [String(nameoremail)]);
+    const { rowCount: existedPlayer, rows: [player] } = await pool.query('SELECT * FROM player WHERE name=$1 OR email=$1', [String(nameoremail)]);
 
     console.log({ player })
 
-    console.log({ rowC: player.rowCount, rows: player.rows })
+    console.log({ existedPlayer, rows: player })
 
-    // if (!player.rowCount || !player.playerPassword)
-    //   return res.status(404).json({ error: "This player doesn't exists" });
+    if (!existedPlayer || !player.password)
+      return res.status(404).json({ error: "This player doesn't exists" });
 
-    // const isValidPassword = await bcrypt.compare(password, player.playerPassword);
-    // if (!isValidPassword)
-    //   return res.status(400).json({ error: "Incorrect password" });
+    const isValidPassword = await bcrypt.compare(password, player.password);
+    if (!isValidPassword)
+      return res.status(400).json({ error: "Incorrect password" });
 
 
     return res.status(201).json({ message: "loginPlayer" });
