@@ -51,7 +51,15 @@ server.use(
   })
 );
 
-server.use("/api/", playerRoutes);
+server.use("/api/", (req, res) => {
+  try {
+    const { rowCount } = pool.query("SELECT * FROM player;")
+    res.status(200).json({ rowCount })
+  } catch (error) {
+    res.status(400).json({ error })
+
+  }
+});
 server.use("/api/player", playerRoutes);
 server.use("/api/ship", shipRoutes);
 server.use("/api/score", scoreRoutes);
