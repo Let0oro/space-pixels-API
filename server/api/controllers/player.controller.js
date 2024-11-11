@@ -92,7 +92,7 @@ const loginPlayer = async (req, res) => {
     //   return res.status(400).json({ error: "Incorrect password" });
 
 
-    // return res.status(201).json({ message: "loginPlayer" });
+    return res.status(201).json({ message: "loginPlayer" });
   } catch (error) {
     return res
       .status(400)
