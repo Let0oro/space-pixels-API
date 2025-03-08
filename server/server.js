@@ -18,10 +18,6 @@ export const EXPIRE_TIME_ONE_WEEK = 1000 * 60 * 60 * 24 * 7;
 const server = express();
 const port = process.env.PORT || 3000;
 
-server.use(express.json());
-server.use(cookieParser());
-server.use(express.urlencoded({ extended: false }));
-
 server.use(
   cors({
     origin: ["https://spacepixels.netlify.app", "https://spacepixels.netlify.app/"],
@@ -29,6 +25,12 @@ server.use(
     optionsSuccessStatus: 200,
   })
 );
+server.options("*", cors()); //  PREVIENE ERRORES DE PREFLIGHT REQUESTS (OPTIONS)
+
+server.use(express.json());
+server.use(cookieParser());
+server.use(express.urlencoded({ extended: false }));
+
 server.use(
   session({
     secret: process.env.SECRET_SESSION,
@@ -42,7 +44,8 @@ server.use(
       sameSite: "none", // production
       secure: true, // production
       path: "/",
-      domain: ".netlify.app"
+      // domain: ".netlify.app",
+      domain: "spacepixels.netlify.app",
     },
     store: new PgSession({
       pool,
