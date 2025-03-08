@@ -21,7 +21,7 @@ const checkDBConnection = async () => {
     );
     console.log(rowsP);
     const { rowCount: exist } = await pool.query("SELECT * FROM player;")
-    if (!exist) createTablesAndSeed();
+    if (!exist) await createTablesAndSeed();
   } catch (error) {
     console.log("Error connecting to database: ", error);
   }
