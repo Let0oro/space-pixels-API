@@ -16,6 +16,10 @@ const checkDBConnection = async () => {
       "SELECT TRUE AS connected_to_database;"
     );
     console.log(rows);
+    const { rowsP } = await pool.query(
+      "SELECT *;"
+    );
+    console.log(rowsP);
     const { rowCount: exist } = await pool.query("SELECT * FROM player;")
     if (!exist) createTablesAndSeed();
   } catch (error) {
