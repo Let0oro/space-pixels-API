@@ -38,11 +38,11 @@ server.use(
     cookie: {
       httpOnly: true,
       maxAge: EXPIRE_TIME_ONE_WEEK,
-      sameSite: "lax", // dev
-      // sameSite: "none", // production
+      // sameSite: "lax", // dev
+      sameSite: "none", // production
       secure: true, // production
       path: "/",
-      // domain: ".netlify.app"
+      domain: ".netlify.app"
     },
     store: new PgSession({
       pool,
