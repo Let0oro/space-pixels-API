@@ -102,7 +102,9 @@ const loginPlayer = async (req, res) => {
 
 const logoutPlayer = async (req, res) => {
   try {
-
+    // req.session.playername = null;
+    // req.session.playerId = null;
+    // req.session.clear();
     return res.status(200).json({ message: "logoutPlayer" });
   } catch (error) {
     return res.status(400).json({ error });
@@ -111,12 +113,18 @@ const logoutPlayer = async (req, res) => {
 
 const followPlayer = async (req, res) => {
   const { other, self } = req.params;
+  // const { id: otherPlayer } = req.params;
+  // const {
+  //   player: { id },
+  // } = req.body;
   try {
     await pool.query(
       "UPDATE player SET following_id = ARRAY_APPEND( following_id, $1) WHERE id = $2;",
       [other, self]
+      // [otherPlayer, id]
     );
     return res.status(201).json({ message: `Following ${other}!` });
+    // return res.status(201).json({ message: `Following ${otherPlayer}!` });
   } catch (error) {
     return res.status(400).json({ error });
   }
@@ -124,27 +132,36 @@ const followPlayer = async (req, res) => {
 
 const unfollowPlayer = async (req, res) => {
   const { other, self } = req.params;
+  // const { id: otherPlayer } = req.params;
+  // const {
+  //   player: { id },
+  // } = req.body;
   try {
     const {
       rows: [{ following_id: currentFollowing }],
     } = await pool.query("SELECT following_id FROM player WHERE id = $1", [self]);
+    // } = await pool.query("SELECT following_id FROM player WHERE id = $1", [id]);
 
     const newFollowinfArr = currentFollowing.filter(
       (fow) => fow != other
+      // (fow) => fow != otherPlayer
     );
 
     if (!newFollowinfArr.length) {
       await pool.query(
         "UPDATE player SET following_id = ARRAY[]::integer[] WHERE id = $1 AND following_id IS NOT NULL AND $2 = ANY(following_id);",
         [self, other]
+        // [id, otherPlayer]
       );
     } else {
       await pool.query(
         "UPDATE player SET following_id = ARRAY[$1::integer] WHERE id = $2 AND following_id IS NOT NULL AND $3 = ANY(following_id);",
         [newFollowinfArr.join(", "), self, other]
+        // [newFollowinfArr.join(", "), id, otherPlayer]
       );
     }
     return res.status(201).json({ message: `Following ${other}!` });
+    // return res.status(201).json({ message: `Following ${otherPlayer}!` });
   } catch (error) {
     return res
       .status(400)

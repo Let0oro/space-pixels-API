@@ -82,9 +82,27 @@ async function setCookiePlayer(req, res, next) {
 
     const { rows: [{ id: lastID }] } = await pool.query("SELECT id FROM player ORDER BY id DESC");
 
+    // req.session.regenerate((err) => {
+    //   if (err) {
+    //     return res.status(500).json({ error: "Error regenerating session" });
+    //   }
+    // })
+
     req.session.playerId = exists ? playerObjID.id : lastID + 1;
     req.session.playername = name || req.session.playername;
+
+    // console.log({ sessionSet: req.session, playerOpts: playerObjID });
+
+    // console.log("Datos de sesión guardados:", req.session);
     next();
+    // await req.session.save((err) => {
+    //   if (err) {
+    //     console.error("Error saving session:", err);
+    //     return res.status(500).json({ error: "Failed to save session" });
+    //   }
+    //   console.log("Session successfully saved:", req.session);
+    //   next();
+    // });;
   } catch (error) {
     console.error("Error in setCookiePlayer:", error);
     return res.status(400).json({ error: `Error adding info to sessions: ${error}` });

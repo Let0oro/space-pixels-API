@@ -5,6 +5,7 @@ const shipQuerys = genQuerys("ship");
 
 const getAllShips = async (req, res, next) => {
   try {
+    // const ships = await pool.query(shipQuerys.getAll);
     const ships = await pool.query("SELECT * FROM ship;");
     if (!ships)
       return res.status(404).json({ error: "Not founded data at table ship" });
@@ -45,11 +46,15 @@ const getPublicShip = async (req, res, next) => {
 
 const getPublicShipsOfPlayer = async (req, res, next) => {
   const { other, self } = req.params;
-
+  // const { id } = req.params;
+  // const {
+  //   player: { id: player_id },
+  // } = req.body;
   try {
     const ships = await pool.query(
       "SELECT ship.pixels, player.id, player.name, ship.price, ship.ship_id,  ship.store_id FROM store JOIN ship ON store.store_id = ship.store_id JOIN player ON player.id = ship.player_id WHERE ship.player_id = $1;",
       [other != null ? other : self]
+      // [id != null ? id : player_id]
     );
     if (!ships)
       return res.status(404).json({ error: "Not founded data at table ship" });
@@ -175,6 +180,9 @@ const getPublicShipsOrderByLikes = async (req, res) => {
 };
 
 const getLikedShipsFromPlayer = async (req, res) => {
+  // const {
+  //   player: { id },
+  // } = req.body;
   const { id } = req.params
   try {
     const response = await pool.query(
@@ -207,6 +215,7 @@ const newShip = async (req, res) => {
     body: { secuence, player: user },
   } = req;
   try {
+    // 
     const { rows: [player] } = await pool.query("SELECT * FROM player WHERE name=$1 OR email=$2;", [user.name, user.email])
     const arrFormated = `${secuence.map((v) => `'${v}'`).join(", ")}`;
     await pool.query(shipQuerys.post, [player.id, arrFormated]);
