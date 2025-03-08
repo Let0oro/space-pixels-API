@@ -82,7 +82,7 @@ const loginPlayer = async (req, res) => {
 
     console.log({ player })
 
-    console.log({ existedPlayer, rows: player })
+    console.log({ existedPlayer, rows })
 
     if (!existedPlayer || !player.password)
       return res.status(404).json({ error: "This player doesn't exists" });
