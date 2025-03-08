@@ -20,7 +20,7 @@ const port = process.env.PORT || 3000;
 
 server.use(
   cors({
-    origin: ["https://spacepixels.netlify.app", "https://spacepixels.netlify.app/"],
+    origin: "https://spacepixels.netlify.app",
     credentials: true,
     optionsSuccessStatus: 200,
   })
