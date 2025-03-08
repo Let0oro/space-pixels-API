@@ -17,7 +17,7 @@ const checkDBConnection = async () => {
     );
     console.log(rows);
     const { rowsP } = await pool.query(
-      "\\dt;"
+      "\dt;"
     );
     console.log(rowsP);
     const { rowCount: exist } = await pool.query("SELECT * FROM player;")

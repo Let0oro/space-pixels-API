@@ -5,31 +5,34 @@ const getPasswordFromReq = async (req, res) => {
   try {
     const { id } = req.params;
     const { password } = req.body;
-    if (!password)
-      return res.status(400).json({ error: "Password not provided" });
+    // if (!password) return res.status(400).json({ error: "Password not provided" });
+    if (!password) throw new Error("Password not provided");
+
     const {
       rows: [player],
       rowCount: exists,
     } = await pool.query("SELECT * FROM player WHERE id=$1", [id]);
+
     return { password, playerPassword: exists ? player.password : undefined };
   } catch (error) {
-    return res.status(400).json({ error });
+    // return res.status(400).json({ error });
+    throw error;
   }
 };
 
 const hashPlayerPassword = async (req, res, next) => {
   try {
     const { password, playerPassword } = await getPasswordFromReq(req, res);
-    const isEqualPassword = playerPassword
-      ? await bcrypt.compare(password, playerPassword)
-      : false;
-    if (isEqualPassword)
-      return res.status(400).json({ error: "You cant use the last password" });
+
+    const isEqualPassword = playerPassword && await bcrypt.compare(password, playerPassword);
+
+    if (isEqualPassword) return res.status(400).json({ error: "You cant use the last password" });
+
     req.body.password = await bcrypt.hash(password, 10);
-    return next();
+    next();
   } catch (error) {
-    console.error({ error });
-    return res.status(400).json({ error });
+    console.error("Error in hashPlayerPassword:" + error);
+    return res.status(400).json({ error: error.message });
   }
 };
 
@@ -43,7 +46,8 @@ const getCookiePlayer = async (req, res, next) => {
   console.log({ sessionGet: req.session });
 
   if (!req.session.playerId) {
-    return res.status(401).json({ error: "No has iniciado sesión" });
+    console.warn("User session not found:", req.session);
+    return res.status(401).json({ error: "You are not logged in" });
   }
 
   try {
@@ -64,7 +68,6 @@ const getCookiePlayer = async (req, res, next) => {
 
 
 async function setCookiePlayer(req, res, next) {
-  console.log("SET COOKIE MIDD")
   const { name, nameoremail } = req.body || {};
   const { path } = req;
 
@@ -93,7 +96,7 @@ async function setCookiePlayer(req, res, next) {
 
     // console.log({ sessionSet: req.session, playerOpts: playerObjID });
 
-    // console.log("Datos de sesión guardados:", req.session);
+    console.log("Datos de sesión guardados:", req.session);
     next();
     // await req.session.save((err) => {
     //   if (err) {

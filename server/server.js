@@ -70,10 +70,19 @@ server.use("/api/score", scoreRoutes);
 server.use("/api/", simpleConnection);
 server.use("/", simpleConnection);
 
-server.use("*", (req, res, next) => {
-  const err = new Error("Route not found: " + req.path + ", url: " + req.url);
-  err.status = 404;
-  next(err);
+server.use("*", (req, res) => {
+  res.header("Access-Control-Allow-Origin", "https://spacepixels.netlify.app");
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+  res.status(404).json({ error: "Route not found: " + req.path });
 });
+
+// server.use("*", (req, res, next) => {
+//   const err = new Error("Route not found: " + req.path + ", url: " + req.url);
+//   err.status = 404;
+//   next(err);
+// });
 
 server.listen(port, () => console.log(`Server running on port ${port}`));
