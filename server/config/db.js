@@ -16,8 +16,8 @@ const checkDBConnection = async () => {
       "SELECT TRUE AS connected_to_database;"
     );
     console.log(rows);
-    const { rowCount: exist } = await pool.query("SELECT * FROM player;")
-    if (!exist) await createTablesAndSeed();
+    // const { rowCount: exist } = await pool.query("SELECT * FROM player;")
+    // if (!exist) await createTablesAndSeed();
   } catch (error) {
     console.log("Error connecting to database: ", error);
   }
@@ -44,6 +44,7 @@ const createTablesAndSeed = async () => {
     console.error("Error creating tables or seeding data:", error);
   }
 };
-checkDBConnection();
+await checkDBConnection();
+await createTablesAndSeed();
 
 export default pool;
