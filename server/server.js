@@ -16,7 +16,7 @@ const PgSession = pgSession(session);
 export const EXPIRE_TIME_ONE_WEEK = 1000 * 60 * 60 * 24 * 7;
 
 const server = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 server.use(express.json());
 server.use(cookieParser());
@@ -24,7 +24,7 @@ server.use(express.urlencoded({ extended: false }));
 
 server.use(
   cors({
-    origin: "https://spacepixels.netlify.app",
+    origin: ["https://spacepixels.netlify.app", "https://spacepixels.netlify.app/"],
     credentials: true,
     optionsSuccessStatus: 200,
   })
@@ -51,12 +51,23 @@ server.use(
   })
 );
 
+const simpleConnection = async (req, res) => {
+  try {
+    const { rowCount } = await pool.query("SELECT * FROM player;")
+    res.status(200).json({ rowCount })
+  } catch (error) {
+    res.status(400).json({ error })
+  }
+}
+
 server.use("/api/player", playerRoutes);
 server.use("/api/ship", shipRoutes);
 server.use("/api/score", scoreRoutes);
+server.use("/api/", simpleConnection);
+server.use("/", simpleConnection);
 
 server.use("*", (req, res, next) => {
-  const err = new Error("Route not found");
+  const err = new Error("Route not found: " + req.path + ", url: " + req.url);
   err.status = 404;
   next(err);
 });

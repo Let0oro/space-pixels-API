@@ -76,24 +76,27 @@ const loginPlayer = async (req, res) => {
       body: { nameoremail, password },
     } = req;
 
-    const {
-      rowCount: existedPlayer,
-      rows: [{ password: playerPassword }],
-    } = await pool.query(getExistedPlayerQuery, [nameoremail, nameoremail]);
+    console.log({ body: req.body, nameoremail, password })
 
-    if (!existedPlayer)
-      return res.status(400).json({ message: "This player doesn't exists" });
+    const { rowCount: existedPlayer, rows: [player] } = await pool.query('SELECT * FROM player WHERE name=$1 OR email=$1', [String(nameoremail)]);
 
-    const isValidPassword = await bcrypt.compare(password, playerPassword);
+    console.log({ player })
+
+    console.log({ existedPlayer, rows: player })
+
+    if (!existedPlayer || !player.password)
+      return res.status(404).json({ error: "This player doesn't exists" });
+
+    const isValidPassword = await bcrypt.compare(password, player.password);
     if (!isValidPassword)
-      return res.status(400).json({ message: "Incorrect password" });
+      return res.status(400).json({ error: "Incorrect password" });
 
 
     return res.status(201).json({ message: "loginPlayer" });
   } catch (error) {
     return res
       .status(400)
-      .json({ message: "Error during login process", error });
+      .json({ error: "Error during login process: " + error });
   }
 };
 
