@@ -44,7 +44,8 @@ const createTablesAndSeed = async () => {
     console.error("Error creating tables or seeding data:", error);
   }
 };
-await checkDBConnection();
-await createTablesAndSeed();
+
+checkDBConnection();
+createTablesAndSeed();
 
 export default pool;
