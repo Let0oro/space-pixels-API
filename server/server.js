@@ -20,8 +20,7 @@ const port = process.env.PORT || 3000;
 
 server.use(
   cors({
-    // origin: "https://spacepixels.netlify.app",
-    origin: "http://localhost:5173",
+    origin: "https://spacepixels.netlify.app",
     credentials: true,
     optionsSuccessStatus: 200,
   })
