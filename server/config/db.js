@@ -3,23 +3,21 @@ import { queryTables } from "../seed/query.seed.js";
 import { generateCSV } from "../seed/generateData.js";
 import { insertData } from "../seed/insertData.js";
 
+
 const { Pool } = pg;
 
+const isProduction = process.env.NODE_ENV === "production"
+
 const pool = new Pool({
-  user: "user",
-  host: "db",
-  database: "db123",
-  password: "pass",
-  port: 5432,
   connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false },
+  ssl: { rejectUnauthorized: !isProduction }
 });
 
 const checkDBConnection = async () => {
   const { rows, rowCount, fields } = await pool.query(
     "SELECT TRUE AS connected_to_database;"
   );
-  console.log(rows);
+
   const { rowCount: exist } = await pool.query("SELECT * FROM player;")
   if (!exist) createTablesAndSeed();
 };

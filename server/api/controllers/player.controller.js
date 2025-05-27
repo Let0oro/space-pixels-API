@@ -8,7 +8,7 @@ const playerQuerys = genQuerys("player");
 const getExistedPlayerQuery = `SELECT * FROM player WHERE name = $1 OR email = $2`;
 
 const getSessionPlayer = async (req, res) => {
-  console.log({ reqSessionFromCall: req.session });
+
   if (req.session && (req.session.playerId || req.session.playername)) {
     const { playername: name, playerId: id } = req.session;
     const {
@@ -76,13 +76,13 @@ const loginPlayer = async (req, res) => {
       body: { nameoremail, password },
     } = req;
 
-    console.log({ body: req.body, nameoremail, password })
+
 
     const { rowCount: existedPlayer, rows: [player] } = await pool.query('SELECT * FROM player WHERE name=$1 OR email=$1', [String(nameoremail)]);
 
-    console.log({ player })
 
-    console.log({ existedPlayer, rows: player })
+
+
 
     if (!existedPlayer || !player.password)
       return res.status(404).json({ error: "This player doesn't exists" });
