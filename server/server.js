@@ -18,17 +18,19 @@ export const EXPIRE_TIME_ONE_WEEK = 1000 * 60 * 60 * 24 * 7;
 const server = express();
 const port = process.env.PORT || 3000;
 
-server.use(express.json());
-server.use(cookieParser());
-server.use(express.urlencoded({ extended: false }));
-
 server.use(
   cors({
-    origin: ["https://spacepixels.netlify.app", "https://spacepixels.netlify.app/"],
+    origin: "https://spacepixels.netlify.app",
     credentials: true,
     optionsSuccessStatus: 200,
   })
 );
+server.options("*", cors()); //  PREVIENE ERRORES DE PREFLIGHT REQUESTS (OPTIONS)
+
+server.use(express.json());
+server.use(cookieParser());
+server.use(express.urlencoded({ extended: false }));
+
 server.use(
   session({
     secret: process.env.SECRET_SESSION,
@@ -38,10 +40,12 @@ server.use(
     cookie: {
       httpOnly: true,
       maxAge: EXPIRE_TIME_ONE_WEEK,
-      sameSite: "none",
-      secure: true,
+      // sameSite: "lax", // dev
+      sameSite: "none", // production
+      secure: true, // production
       path: "/",
-      domain: ".netlify.app"
+      // domain: ".netlify.app",
+      domain: "spacepixels.netlify.app",
     },
     store: new PgSession({
       pool,
@@ -66,10 +70,19 @@ server.use("/api/score", scoreRoutes);
 server.use("/api/", simpleConnection);
 server.use("/", simpleConnection);
 
-server.use("*", (req, res, next) => {
-  const err = new Error("Route not found: " + req.path + ", url: " + req.url);
-  err.status = 404;
-  next(err);
+server.use("*", (req, res) => {
+  res.header("Access-Control-Allow-Origin", "https://spacepixels.netlify.app");
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+  res.status(404).json({ error: "Route not found: " + req.path });
 });
+
+// server.use("*", (req, res, next) => {
+//   const err = new Error("Route not found: " + req.path + ", url: " + req.url);
+//   err.status = 404;
+//   next(err);
+// });
 
 server.listen(port, () => console.log(`Server running on port ${port}`));
