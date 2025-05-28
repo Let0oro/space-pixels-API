@@ -8,7 +8,7 @@ const queryTables = {
   email CHARACTER VARYING(60) UNIQUE NOT NULL,
   password TEXT  NOT NULL,
   coins INT NOT NULL DEFAULT 20,
-  active_ship_id INT,
+  active_ship_id INT DEFAULT 0,
   following_id INT[]
 );`,
 
