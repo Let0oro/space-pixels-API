@@ -37,13 +37,13 @@ const hashPlayerPassword = async (req, res, next) => {
 };
 
 const getCookiePlayer = async (req, res, next) => {
-  console.log("GET COOKIE MIDD")
-  console.log({ bodyGet: req.body });
+
+
   if (req.body.password || req.body.name || req.body.email || req.body.nameoremail) {
     return next();
   }
 
-  console.log({ sessionGet: req.session });
+
 
   if (!req.session.playerId) {
     console.warn("User session not found:", req.session);
@@ -68,6 +68,7 @@ const getCookiePlayer = async (req, res, next) => {
 
 
 async function setCookiePlayer(req, res, next) {
+
   const { name, nameoremail } = req.body || {};
   const { path } = req;
 
@@ -107,7 +108,7 @@ async function setCookiePlayer(req, res, next) {
     //   next();
     // });;
   } catch (error) {
-    console.error("Error in setCookiePlayer:", error);
+
     return res.status(400).json({ error: `Error adding info to sessions: ${error}` });
   }
 }

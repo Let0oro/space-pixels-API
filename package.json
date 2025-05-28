@@ -4,10 +4,9 @@
   "description": "",
   "main": "./server/server.js",
   "scripts": {
-    "server:dev": "dotenv -e .env.dev -- nodemon .",
-    "server": "dotenv -e .env -- nodemon .",
-    "dev": "dotenv -e .env.dev -- node .",
-    "start": "dotenv -e .env -- node .",
+    "start": "dotenv -e .env.dev -- node .",
+    "server": "nodemon .",
+    "dev": "dotenv -e .env.dev -- nodemon .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

@@ -200,9 +200,9 @@ const getLikedShipsFromPlayer = async (req, res) => {
 const getShip = async (req, res) => {
   const { id } = req.params;
   try {
-    console.log({ idGetShipsUser: id })
+
     const ship = await pool.query(shipQuerys.get, [id]);
-    console.log({ shipsUser: ship })
+
     if (!ship) return res.status(404).json({ error: "Ship not found" });
     return res.status(200).json(ship.rows);
   } catch (error) {

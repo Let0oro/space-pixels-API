@@ -1,4 +1,6 @@
 node_modules
-
-.env
 desktop.ini
+.env
+.env.dev
+csvs
+

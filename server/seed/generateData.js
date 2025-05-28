@@ -70,7 +70,7 @@ export const generateCSV = async () => {
       });
     }
     await playerCsvWriter.writeRecords(playerData);
-    console.log("Archivo player.csv generado exitosamente");
+
 
     const storeData = [];
     for (let i = 1; i <= NLIST; i++) {
@@ -78,7 +78,7 @@ export const generateCSV = async () => {
     }
 
     await storeCsvWriter.writeRecords(storeData);
-    console.log("Archivo likes.csv generado exitosamente");
+
 
     const scoreData = playerData.map((player) => ({
       playername: player.name,
@@ -94,7 +94,7 @@ export const generateCSV = async () => {
       });
     }
     await shipCsvWriter.writeRecords(shipData);
-    console.log("Archivo ship.csv generado exitosamente");
+
 
     const likesData = [];
     for (let i = 1; i <= NLIST; i++) {
@@ -103,8 +103,8 @@ export const generateCSV = async () => {
       likesData.push({ store_id: storeId, player_id: playerId });
     }
     await likesCsvWriter.writeRecords(likesData);
-    console.log("Archivo likes.csv generado exitosamente");
+
   } catch (error) {
-    console.error({ err });
+
   }
 };

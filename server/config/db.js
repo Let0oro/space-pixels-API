@@ -3,15 +3,14 @@ import { queryTables } from "../seed/query.seed.js";
 import { generateCSV } from "../seed/generateData.js";
 import { insertData } from "../seed/insertData.js";
 
+
 const { Pool } = pg;
 
-const isProduction = process.env.NODE_ENV === "production";
+const isProduction = process.env.NODE_ENV === "production"
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: isProduction
-    ? { rejectUnauthorized: false }
-    : false,
+  ssl: { rejectUnauthorized: !isProduction }
 });
 
 const checkDBConnection = async () => {
