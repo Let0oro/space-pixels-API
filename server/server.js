@@ -17,15 +17,28 @@ export const EXPIRE_TIME_ONE_WEEK = 1000 * 60 * 60 * 24 * 7;
 
 const server = express();
 const port = process.env.PORT || 3000;
+const isProd = process.env.NODE_ENV === "production";
+
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://space-pixels.vercel.app",
+  "https://spacepixels.netlify.app",
+];
 
 server.use(
   cors({
-    origin: "http://localhost:5173", // https://space-pixels.vercel.app/
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS: " + origin));
+      }
+    },
     credentials: true,
     optionsSuccessStatus: 200,
   })
 );
-server.options("*", cors()); //  PREVIENE ERRORES DE PREFLIGHT REQUESTS (OPTIONS)
+server.options("*", cors());
 
 server.use(express.json());
 server.use(cookieParser());
@@ -40,12 +53,10 @@ server.use(
     cookie: {
       httpOnly: true,
       maxAge: EXPIRE_TIME_ONE_WEEK,
-      // sameSite: "lax", // dev
-      sameSite: "none", // production
-      secure: true, // production
+      sameSite: isProd ? "none" : "lax",
+      secure: isProd,
       path: "/",
-      // domain: ".netlify.app",
-      domain: "spacepixels.netlify.app",
+      ...(isProd && { domain: "space-pixels.vercel.app" }),
     },
     store: new PgSession({
       pool,
@@ -57,12 +68,12 @@ server.use(
 
 const simpleConnection = async (req, res) => {
   try {
-    const { rowCount } = await pool.query("SELECT * FROM player;")
-    res.status(200).json({ rowCount })
+    const { rowCount } = await pool.query("SELECT * FROM player;");
+    res.status(200).json({ rowCount });
   } catch (error) {
-    res.status(400).json({ error })
+    res.status(400).json({ error });
   }
-}
+};
 
 server.use("/api/player", playerRoutes);
 server.use("/api/ship", shipRoutes);
@@ -71,18 +82,7 @@ server.use("/api/", simpleConnection);
 server.use("/", simpleConnection);
 
 server.use("*", (req, res) => {
-  res.header("Access-Control-Allow-Origin", "https://spacepixels.netlify.app");
-  res.header("Access-Control-Allow-Credentials", "true");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
   res.status(404).json({ error: "Route not found: " + req.path });
 });
-
-// server.use("*", (req, res, next) => {
-//   const err = new Error("Route not found: " + req.path + ", url: " + req.url);
-//   err.status = 404;
-//   next(err);
-// });
 
 server.listen(port, () => console.log(`Server running on port ${port}`));
